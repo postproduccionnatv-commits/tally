@@ -1,0 +1,13 @@
+# render.yaml
+# Este archivo le dice a Render cómo desplegar el servidor.
+# Súbelo a GitHub junto con server.js y package.json.
+
+services:
+  - type: web
+    name: tally-relay
+    env: node
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: BRIDGE_SECRET
+        generateValue: true   # Render genera una clave aleatoria automáticamente
