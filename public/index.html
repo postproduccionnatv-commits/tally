@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+  <meta name="apple-mobile-web-app-title" content="Tally"/>
+  <meta name="theme-color" content="#000000"/>
+  <link rel="manifest" href="/manifest.json"/>
+  <title>Tally</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #000;
+      color: #fff;
+      height: 100dvh;
+      overflow: hidden;
+      user-select: none;
+    }
+
+    /* ── PANTALLA SELECCIÓN ── */
+    #screen-select {
+      display: flex;
+      flex-direction: column;
+      height: 100dvh;
+      padding: 20px;
+      padding-top: max(20px, env(safe-area-inset-top));
+    }
+
+    .title { font-size: 24px; font-weight: 700; margin-bottom: 6px; }
+    .subtitle { font-size: 13px; color: #666; margin-bottom: 28px; }
+    .subtitle .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #333; margin-right: 6px; vertical-align: middle; transition: background 0.3s; }
+    .subtitle .dot.on { background: #27ae60; }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      flex: 1;
+    }
+
+    .cam-btn {
+      border-radius: 14px;
+      border: 2px solid #222;
+      background: #111;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+      position: relative;
+      min-height: 100px;
+    }
+    .cam-btn.pgm  { background: #CC0000; border-color: #CC0000; }
+    .cam-btn.prev { background: #007A00; border-color: #007A00; }
+
+    .cam-name { font-size: 18px; font-weight: 700; }
+    .cam-badge {
+      position: absolute; top: 8px; right: 10px;
+      font-size: 10px; font-weight: 800; opacity: 0.85;
+      letter-spacing: 1px;
+    }
+
+    /* ── PANTALLA TALLY ── */
+    #screen-tally {
+      display: none;
+      flex-direction: column;
+      height: 100dvh;
+      transition: background 0.15s;
+    }
+
+    .back-btn {
+      position: absolute;
+      top: max(16px, env(safe-area-inset-top));
+      left: 16px;
+      font-size: 14px;
+      color: rgba(255,255,255,0.35);
+      cursor: pointer;
+      padding: 8px;
+      z-index: 10;
+    }
+
+    .tally-main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .tally-state {
+      font-size: clamp(36px, 12vw, 64px);
+      font-weight: 900;
+      letter-spacing: 4px;
+      text-align: center;
+      transition: color 0.15s;
+    }
+
+    .tally-cam {
+      font-size: 18px;
+      font-weight: 400;
+      margin-top: 12px;
+      opacity: 0.6;
+      letter-spacing: 2px;
+    }
+
+    .status-footer {
+      padding-bottom: max(16px, env(safe-area-inset-bottom));
+      text-align: center;
+      font-size: 11px;
+      color: rgba(255,255,255,0.2);
+      letter-spacing: 1px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- PANTALLA SELECCIÓN -->
+  <div id="screen-select">
+    <div class="title">Selecciona tu cámara</div>
+    <div class="subtitle">
+      <span class="dot" id="dot"></span>
+      <span id="conn-label">Conectando...</span>
+    </div>
+    <div class="grid" id="grid"></div>
+  </div>
+
+  <!-- PANTALLA TALLY -->
+  <div id="screen-tally">
+    <div class="back-btn" id="back-btn">⟵ Cambiar</div>
+    <div class="tally-main">
+      <div class="tally-state" id="tally-state">LIBRE</div>
+      <div class="tally-cam" id="tally-cam"></div>
+    </div>
+    <div class="status-footer" id="status-footer">Sin conexión</div>
+  </div>
+
+  <script src="https://cdn.socket.io/4.7.4/socket.io.min.js"></script>
+  <script>
+    const CAMERAS = [
+      { label: 'Cámara 1', input: 'input1' },
+      { label: 'Cámara 2', input: 'input2' },
+      { label: 'Cámara 3', input: 'input3' },
+      { label: 'Cámara 4', input: 'input4' },
+      { label: 'Cámara 5', input: 'input5' },
+      { label: 'Cámara 6', input: 'input6' },
+    ];
+
+    const STATES = {
+      pgm:      { bg: '#CC0000', label: 'EN ANTENA',  text: '#fff' },
+      prev:     { bg: '#007A00', label: 'EN PREVIO',  text: '#fff' },
+      inactive: { bg: '#111111', label: 'LIBRE',      text: '#333' },
+      offline:  { bg: '#0a0a0a', label: 'SIN SEÑAL',  text: '#222' },
+    };
+
+    let tallyInputs = {};
+    let bridgeOn = false;
+    let selectedCam = null;
+    let prevState = null;
+
+    // ── Construir grid de cámaras ──
+    const grid = document.getElementById('grid');
+    CAMERAS.forEach(cam => {
+      const btn = document.createElement('div');
+      btn.className = 'cam-btn';
+      btn.id = 'btn-' + cam.input;
+      btn.innerHTML = `<span class="cam-name">${cam.label}</span><span class="cam-badge" id="badge-${cam.input}"></span>`;
+      btn.addEventListener('click', () => selectCam(cam));
+      grid.appendChild(btn);
+    });
+
+    // ── Seleccionar cámara ──
+    function selectCam(cam) {
+      selectedCam = cam;
+      localStorage.setItem('selectedCam', cam.input);
+      document.getElementById('tally-cam').textContent = cam.label;
+      document.getElementById('screen-select').style.display = 'none';
+      document.getElementById('screen-tally').style.display = 'flex';
+      updateTallyScreen();
+      // Evitar que la pantalla se apague
+      requestWakeLock();
+    }
+
+    document.getElementById('back-btn').addEventListener('click', () => {
+      document.getElementById('screen-select').style.display = 'flex';
+      document.getElementById('screen-tally').style.display = 'none';
+      selectedCam = null;
+    });
+
+    // ── Actualizar pantalla tally ──
+    function updateTallyScreen() {
+      if (!selectedCam) return;
+      const key = !bridgeOn ? 'offline' : (tallyInputs[selectedCam.input] || 'inactive');
+      const s = STATES[key];
+      document.getElementById('screen-tally').style.background = s.bg;
+      document.getElementById('tally-state').style.color = s.text;
+      document.getElementById('tally-state').textContent = s.label;
+
+      // Vibrar al entrar en antena
+      if (key === 'pgm' && prevState !== 'pgm') {
+        navigator.vibrate && navigator.vibrate(200);
+      }
+      prevState = key;
+
+      document.getElementById('status-footer').textContent =
+        bridgeOn ? '● Estudio conectado' : '● Estudio desconectado';
+    }
+
+    // ── Actualizar botones del grid ──
+    function updateGrid() {
+      CAMERAS.forEach(cam => {
+        const btn = document.getElementById('btn-' + cam.input);
+        const badge = document.getElementById('badge-' + cam.input);
+        const state = tallyInputs[cam.input];
+        btn.className = 'cam-btn ' + (state === 'pgm' ? 'pgm' : state === 'prev' ? 'prev' : '');
+        badge.textContent = state === 'pgm' ? 'PGM' : state === 'prev' ? 'PRV' : '';
+      });
+    }
+
+    // ── Wake Lock (mantener pantalla encendida) ──
+    let wakeLock = null;
+    async function requestWakeLock() {
+      try {
+        if ('wakeLock' in navigator) {
+          wakeLock = await navigator.wakeLock.request('screen');
+        }
+      } catch(e) {}
+    }
+
+    // ── Restaurar cámara guardada ──
+    const saved = localStorage.getItem('selectedCam');
+    if (saved) {
+      const cam = CAMERAS.find(c => c.input === saved);
+      if (cam) selectCam(cam);
+    }
+
+    // ── Conexión al relay ──
+    const socket = io(window.location.origin, {
+      query: { role: 'client' },
+      reconnection: true,
+      reconnectionDelay: 2000,
+    });
+
+    socket.on('connect', () => {
+      document.getElementById('dot').classList.add('on');
+      document.getElementById('conn-label').textContent = 'Conectado';
+    });
+
+    socket.on('disconnect', () => {
+      document.getElementById('dot').classList.remove('on');
+      document.getElementById('conn-label').textContent = 'Reconectando...';
+      bridgeOn = false;
+      updateTallyScreen();
+    });
+
+    socket.on('bridge-status', data => {
+      bridgeOn = data.connected;
+      updateTallyScreen();
+    });
+
+    socket.on('tally-update', data => {
+      tallyInputs = data.inputs || {};
+      updateGrid();
+      updateTallyScreen();
+    });
+  </script>
+</body>
+</html>
