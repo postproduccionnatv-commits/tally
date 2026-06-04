@@ -10,263 +10,329 @@
   <link rel="manifest" href="/manifest.json"/>
   <title>Tally</title>
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+    body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; background:#000; color:#fff; height:100dvh; overflow:hidden; user-select:none; }
 
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      background: #000;
-      color: #fff;
-      height: 100dvh;
-      overflow: hidden;
-      user-select: none;
+    /* ── MENÚ INICIAL ── */
+    #screen-menu {
+      display:flex; flex-direction:column; align-items:center; justify-content:center;
+      height:100dvh; padding:32px;
+      padding-top:max(32px, env(safe-area-inset-top));
     }
+    .menu-title { font-size:28px; font-weight:700; margin-bottom:8px; text-align:center; }
+    .menu-sub   { font-size:14px; color:#555; margin-bottom:48px; text-align:center; }
+    .menu-btn {
+      width:100%; max-width:320px; padding:22px 16px; border-radius:16px;
+      border:1.5px solid #222; background:#111; margin-bottom:16px;
+      cursor:pointer; text-align:left; transition:border-color .2s, background .2s;
+    }
+    .menu-btn:active { background:#1a1a1a; }
+    .menu-btn-title { font-size:20px; font-weight:700; margin-bottom:4px; }
+    .menu-btn-desc  { font-size:13px; color:#555; line-height:1.4; }
+    .menu-btn.plato { border-color:#333; }
+    .menu-btn.eng   { border-color:#333; }
+    .conn-dot { display:inline-block; width:8px; height:8px; border-radius:50%; background:#333; margin-right:6px; transition:background .3s; vertical-align:middle; }
+    .conn-dot.on { background:#27ae60; }
+    .menu-status { font-size:12px; color:#444; margin-top:32px; }
 
-    /* ── PANTALLA SELECCIÓN ── */
+    /* ── SELECCIÓN DE CÁMARA ── */
     #screen-select {
-      display: flex;
-      flex-direction: column;
-      height: 100dvh;
-      padding: 20px;
-      padding-top: max(20px, env(safe-area-inset-top));
+      display:none; flex-direction:column;
+      height:100dvh; padding:20px;
+      padding-top:max(20px, env(safe-area-inset-top));
+      padding-bottom:max(16px, env(safe-area-inset-bottom));
     }
-
-    .title { font-size: 24px; font-weight: 700; margin-bottom: 6px; }
-    .subtitle { font-size: 13px; color: #666; margin-bottom: 28px; }
-    .subtitle .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #333; margin-right: 6px; vertical-align: middle; transition: background 0.3s; }
-    .subtitle .dot.on { background: #27ae60; }
-
-    .grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      flex: 1;
-    }
-
+    .sel-header { display:flex; align-items:center; gap:12px; margin-bottom:6px; }
+    .back-small { font-size:13px; color:#444; cursor:pointer; padding:4px 0; }
+    .sel-title  { font-size:20px; font-weight:700; flex:1; }
+    .sel-sub    { font-size:12px; color:#444; margin-bottom:20px; }
+    .grid { display:grid; gap:10px; flex:1; overflow-y:auto; }
+    .grid.g2 { grid-template-columns:1fr 1fr; }
+    .grid.g3 { grid-template-columns:1fr 1fr 1fr; }
     .cam-btn {
-      border-radius: 14px;
-      border: 2px solid #222;
-      background: #111;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: border-color 0.2s, background 0.2s;
-      position: relative;
-      min-height: 100px;
+      border-radius:12px; border:1.5px solid #1a1a1a; background:#111;
+      display:flex; flex-direction:column; align-items:center; justify-content:center;
+      cursor:pointer; position:relative; padding:12px 8px;
+      transition:border-color .15s, background .15s;
+      min-height:70px;
     }
-    .cam-btn.pgm  { background: #CC0000; border-color: #CC0000; }
-    .cam-btn.prev { background: #007A00; border-color: #007A00; }
-
-    .cam-name { font-size: 18px; font-weight: 700; }
-    .cam-badge {
-      position: absolute; top: 8px; right: 10px;
-      font-size: 10px; font-weight: 800; opacity: 0.85;
-      letter-spacing: 1px;
-    }
+    .cam-btn.pgm  { background:#CC0000; border-color:#CC0000; }
+    .cam-btn.prev { background:#007A00; border-color:#007A00; }
+    .cam-name  { font-size:15px; font-weight:700; text-align:center; }
+    .cam-badge { position:absolute; top:6px; right:8px; font-size:9px; font-weight:800; opacity:.85; letter-spacing:1px; }
 
     /* ── PANTALLA TALLY ── */
     #screen-tally {
-      display: none;
-      flex-direction: column;
-      height: 100dvh;
-      transition: background 0.15s;
+      display:none; flex-direction:column;
+      height:100dvh; position:relative;
+      transition:background .12s;
     }
+    .tally-back { position:absolute; top:max(16px,env(safe-area-inset-top)); left:16px; font-size:13px; color:rgba(255,255,255,.3); cursor:pointer; padding:8px; z-index:10; }
+    .tally-main { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+    .tally-state { font-size:clamp(36px,11vw,60px); font-weight:900; letter-spacing:4px; text-align:center; transition:color .12s; }
+    .tally-cam   { font-size:17px; font-weight:400; margin-top:10px; opacity:.6; letter-spacing:2px; }
 
-    .back-btn {
-      position: absolute;
-      top: max(16px, env(safe-area-inset-top));
-      left: 16px;
-      font-size: 14px;
-      color: rgba(255,255,255,0.35);
-      cursor: pointer;
-      padding: 8px;
-      z-index: 10;
+    /* Barra inferior: PREVIO */
+    .tally-footer {
+      padding:14px 20px;
+      padding-bottom:max(20px, env(safe-area-inset-bottom));
+      text-align:center; border-top:1px solid rgba(255,255,255,.07);
     }
+    .prev-label { font-size:11px; color:rgba(255,255,255,.3); letter-spacing:2px; text-transform:uppercase; margin-bottom:4px; }
+    .prev-cam   { font-size:16px; font-weight:600; color:#27ae60; min-height:22px; }
 
-    .tally-main {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .tally-state {
-      font-size: clamp(36px, 12vw, 64px);
-      font-weight: 900;
-      letter-spacing: 4px;
-      text-align: center;
-      transition: color 0.15s;
-    }
-
-    .tally-cam {
-      font-size: 18px;
-      font-weight: 400;
-      margin-top: 12px;
-      opacity: 0.6;
-      letter-spacing: 2px;
-    }
-
-    .status-footer {
-      padding-bottom: max(16px, env(safe-area-inset-bottom));
-      text-align: center;
-      font-size: 11px;
-      color: rgba(255,255,255,0.2);
-      letter-spacing: 1px;
-    }
+    /* Status */
+    .tally-status { position:absolute; bottom:max(56px,calc(env(safe-area-inset-bottom)+56px)); width:100%; text-align:center; font-size:11px; color:rgba(255,255,255,.18); letter-spacing:1px; pointer-events:none; }
   </style>
 </head>
 <body>
 
-  <!-- PANTALLA SELECCIÓN -->
-  <div id="screen-select">
-    <div class="title">Selecciona tu cámara</div>
-    <div class="subtitle">
-      <span class="dot" id="dot"></span>
-      <span id="conn-label">Conectando...</span>
-    </div>
-    <div class="grid" id="grid"></div>
+<!-- MENÚ INICIAL -->
+<div id="screen-menu">
+  <div class="menu-title">Tally Remote</div>
+  <div class="menu-sub">Selecciona tu modo de trabajo</div>
+
+  <div class="menu-btn plato" onclick="enterMode('plato')">
+    <div class="menu-btn-title">📺 &nbsp;Plató</div>
+    <div class="menu-btn-desc">Hasta 6 cámaras · Flash en antena · Previo visible en pantalla</div>
   </div>
 
-  <!-- PANTALLA TALLY -->
-  <div id="screen-tally">
-    <div class="back-btn" id="back-btn">⟵ Cambiar</div>
-    <div class="tally-main">
-      <div class="tally-state" id="tally-state">LIBRE</div>
-      <div class="tally-cam" id="tally-cam"></div>
-    </div>
-    <div class="status-footer" id="status-footer">Sin conexión</div>
+  <div class="menu-btn eng" onclick="enterMode('eng')">
+    <div class="menu-btn-title">🎥 &nbsp;ENG Directo</div>
+    <div class="menu-btn-desc">Hasta 24 entradas · Flash en directo</div>
   </div>
 
-  <script src="https://cdn.socket.io/4.7.4/socket.io.min.js"></script>
-  <script>
-    const CAMERAS = [
-      { label: 'Cámara 1', input: 'input1' },
-      { label: 'Cámara 2', input: 'input2' },
-      { label: 'Cámara 3', input: 'input3' },
-      { label: 'Cámara 4', input: 'input4' },
-      { label: 'Cámara 5', input: 'input5' },
-      { label: 'Cámara 6', input: 'input6' },
-    ];
+  <div class="menu-status">
+    <span class="conn-dot" id="menu-dot"></span>
+    <span id="menu-conn">Conectando...</span>
+  </div>
+</div>
 
-    const STATES = {
-      pgm:      { bg: '#CC0000', label: 'EN ANTENA',  text: '#fff' },
-      prev:     { bg: '#007A00', label: 'EN PREVIO',  text: '#fff' },
-      inactive: { bg: '#111111', label: 'LIBRE',      text: '#333' },
-      offline:  { bg: '#0a0a0a', label: 'SIN SEÑAL',  text: '#222' },
-    };
+<!-- SELECCIÓN DE CÁMARA -->
+<div id="screen-select">
+  <div class="sel-header">
+    <span class="back-small" onclick="goMenu()">⟵</span>
+    <span class="sel-title" id="sel-title">Selecciona tu cámara</span>
+  </div>
+  <div class="sel-sub" id="sel-sub"></div>
+  <div class="grid" id="cam-grid"></div>
+</div>
 
-    let tallyInputs = {};
-    let bridgeOn = false;
-    let selectedCam = null;
-    let prevState = null;
+<!-- PANTALLA TALLY -->
+<div id="screen-tally">
+  <div class="tally-back" onclick="goSelect()">⟵ Cambiar</div>
+  <div class="tally-main">
+    <div class="tally-state" id="tally-state">LIBRE</div>
+    <div class="tally-cam"   id="tally-cam"></div>
+  </div>
+  <div class="tally-status" id="tally-status">Sin conexión</div>
+  <div class="tally-footer" id="tally-footer" style="display:none">
+    <div class="prev-label">En previo</div>
+    <div class="prev-cam" id="prev-cam">—</div>
+  </div>
+</div>
 
-    // ── Construir grid de cámaras ──
-    const grid = document.getElementById('grid');
-    CAMERAS.forEach(cam => {
-      const btn = document.createElement('div');
-      btn.className = 'cam-btn';
-      btn.id = 'btn-' + cam.input;
-      btn.innerHTML = `<span class="cam-name">${cam.label}</span><span class="cam-badge" id="badge-${cam.input}"></span>`;
-      btn.addEventListener('click', () => selectCam(cam));
-      grid.appendChild(btn);
+<script src="https://cdn.socket.io/4.7.4/socket.io.min.js"></script>
+<script>
+// ── Configuración de cámaras ──────────────────────────────────
+const CAMERAS_PLATO = Array.from({length:6},  (_,i) => ({ label:`Cámara ${i+1}`, input:`input${i+1}` }));
+const CAMERAS_ENG   = Array.from({length:24}, (_,i) => ({ label:`CAM ${i+1}`,    input:`input${i+1}` }));
+
+const STATES = {
+  pgm:      { bg:'#CC0000', label:'EN ANTENA', text:'#fff' },
+  prev:     { bg:'#007A00', label:'EN PREVIO', text:'#fff' },
+  inactive: { bg:'#111111', label:'LIBRE',     text:'#2a2a2a' },
+  offline:  { bg:'#0a0a0a', label:'SIN SEÑAL', text:'#1a1a1a' },
+};
+
+let mode        = null;   // 'plato' | 'eng'
+let cameras     = [];
+let selectedCam = null;
+let tallyInputs = {};
+let bridgeOn    = false;
+let prevTallyKey= null;
+let wakeLock    = null;
+let torchTrack  = null;
+let torchActive = false;
+
+// ── Flash / linterna ──────────────────────────────────────────
+async function initTorch() {
+  if (torchTrack) return;
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode:'environment', advanced:[{torch:false}] }
     });
+    torchTrack = stream.getVideoTracks()[0];
+  } catch(e) {
+    console.log('Torch no disponible:', e.message);
+  }
+}
 
-    // ── Seleccionar cámara ──
-    function selectCam(cam) {
-      selectedCam = cam;
-      localStorage.setItem('selectedCam', cam.input);
-      document.getElementById('tally-cam').textContent = cam.label;
-      document.getElementById('screen-select').style.display = 'none';
-      document.getElementById('screen-tally').style.display = 'flex';
-      updateTallyScreen();
-      // Evitar que la pantalla se apague
-      requestWakeLock();
-    }
+async function setTorch(on) {
+  if (!torchTrack) return;
+  if (torchActive === on) return;
+  try {
+    await torchTrack.applyConstraints({ advanced:[{ torch: on }] });
+    torchActive = on;
+  } catch(e) {
+    console.log('setTorch error:', e.message);
+  }
+}
 
-    document.getElementById('back-btn').addEventListener('click', () => {
-      document.getElementById('screen-select').style.display = 'flex';
-      document.getElementById('screen-tally').style.display = 'none';
-      selectedCam = null;
-    });
+// ── Wake Lock ─────────────────────────────────────────────────
+async function requestWakeLock() {
+  try {
+    if ('wakeLock' in navigator) wakeLock = await navigator.wakeLock.request('screen');
+  } catch(e) {}
+}
 
-    // ── Actualizar pantalla tally ──
-    function updateTallyScreen() {
-      if (!selectedCam) return;
-      const key = !bridgeOn ? 'offline' : (tallyInputs[selectedCam.input] || 'inactive');
-      const s = STATES[key];
-      document.getElementById('screen-tally').style.background = s.bg;
-      document.getElementById('tally-state').style.color = s.text;
-      document.getElementById('tally-state').textContent = s.label;
+// ── Navegación ────────────────────────────────────────────────
+function show(id) {
+  ['screen-menu','screen-select','screen-tally'].forEach(s => {
+    document.getElementById(s).style.display = (s === id) ? 'flex' : 'none';
+  });
+}
 
-      // Vibrar al entrar en antena
-      if (key === 'pgm' && prevState !== 'pgm') {
-        navigator.vibrate && navigator.vibrate(200);
-      }
-      prevState = key;
+function goMenu() {
+  setTorch(false);
+  selectedCam = null;
+  mode = null;
+  show('screen-menu');
+}
 
-      document.getElementById('status-footer').textContent =
-        bridgeOn ? '● Estudio conectado' : '● Estudio desconectado';
-    }
+function goSelect() {
+  setTorch(false);
+  selectedCam = null;
+  buildGrid();
+  show('screen-select');
+}
 
-    // ── Actualizar botones del grid ──
-    function updateGrid() {
-      CAMERAS.forEach(cam => {
-        const btn = document.getElementById('btn-' + cam.input);
-        const badge = document.getElementById('badge-' + cam.input);
-        const state = tallyInputs[cam.input];
-        btn.className = 'cam-btn ' + (state === 'pgm' ? 'pgm' : state === 'prev' ? 'prev' : '');
-        badge.textContent = state === 'pgm' ? 'PGM' : state === 'prev' ? 'PRV' : '';
-      });
-    }
+function enterMode(m) {
+  mode    = m;
+  cameras = m === 'plato' ? CAMERAS_PLATO : CAMERAS_ENG;
+  document.getElementById('sel-title').textContent = m === 'plato' ? 'Selecciona tu cámara' : 'Selecciona tu entrada';
+  document.getElementById('tally-footer').style.display = m === 'plato' ? 'block' : 'none';
+  buildGrid();
+  show('screen-select');
+  // Guardar modo
+  localStorage.setItem('tallyMode', m);
+}
 
-    // ── Wake Lock (mantener pantalla encendida) ──
-    let wakeLock = null;
-    async function requestWakeLock() {
-      try {
-        if ('wakeLock' in navigator) {
-          wakeLock = await navigator.wakeLock.request('screen');
-        }
-      } catch(e) {}
-    }
+// ── Grid de cámaras ───────────────────────────────────────────
+function buildGrid() {
+  const grid = document.getElementById('cam-grid');
+  const isEng = mode === 'eng';
+  grid.className = 'grid ' + (isEng ? 'g3' : 'g2');
+  grid.innerHTML = '';
 
-    // ── Restaurar cámara guardada ──
-    const saved = localStorage.getItem('selectedCam');
-    if (saved) {
-      const cam = CAMERAS.find(c => c.input === saved);
-      if (cam) selectCam(cam);
-    }
+  const sub = document.getElementById('sel-sub');
+  sub.textContent = bridgeOn ? '● Estudio conectado' : '● Estudio desconectado';
+  sub.style.color = bridgeOn ? '#27ae60' : '#555';
 
-    // ── Conexión al relay ──
-    const socket = io(window.location.origin, {
-      query: { role: 'client' },
-      reconnection: true,
-      reconnectionDelay: 2000,
-    });
+  cameras.forEach(cam => {
+    const state = tallyInputs[cam.input] || 'inactive';
+    const btn = document.createElement('div');
+    btn.className = 'cam-btn ' + (state === 'pgm' ? 'pgm' : state === 'prev' ? 'prev' : '');
+    btn.id = 'btn-' + cam.input;
+    btn.innerHTML = `<span class="cam-name">${cam.label}</span><span class="cam-badge" id="badge-${cam.input}">${state==='pgm'?'PGM':state==='prev'?'PRV':''}</span>`;
+    btn.addEventListener('click', () => selectCam(cam));
+    grid.appendChild(btn);
+  });
+}
 
-    socket.on('connect', () => {
-      document.getElementById('dot').classList.add('on');
-      document.getElementById('conn-label').textContent = 'Conectado';
-    });
+function updateGrid() {
+  cameras.forEach(cam => {
+    const btn   = document.getElementById('btn-' + cam.input);
+    const badge = document.getElementById('badge-' + cam.input);
+    if (!btn) return;
+    const state = tallyInputs[cam.input] || 'inactive';
+    btn.className = 'cam-btn ' + (state==='pgm'?'pgm':state==='prev'?'prev':'');
+    badge.textContent = state==='pgm'?'PGM':state==='prev'?'PRV':'';
+  });
+}
 
-    socket.on('disconnect', () => {
-      document.getElementById('dot').classList.remove('on');
-      document.getElementById('conn-label').textContent = 'Reconectando...';
-      bridgeOn = false;
-      updateTallyScreen();
-    });
+// ── Seleccionar cámara ────────────────────────────────────────
+async function selectCam(cam) {
+  selectedCam = cam;
+  localStorage.setItem('selectedCam', cam.input);
+  document.getElementById('tally-cam').textContent = cam.label;
+  show('screen-tally');
+  updateTallyScreen();
+  requestWakeLock();
+  await initTorch();  // pedir permiso de cámara al seleccionar
+}
 
-    socket.on('bridge-status', data => {
-      bridgeOn = data.connected;
-      updateTallyScreen();
-    });
+// ── Actualizar pantalla tally ─────────────────────────────────
+function updateTallyScreen() {
+  if (!selectedCam) return;
 
-    socket.on('tally-update', data => {
-      tallyInputs = data.inputs || {};
-      updateGrid();
-      updateTallyScreen();
-    });
-  </script>
+  const key = (!bridgeOn) ? 'offline' : (tallyInputs[selectedCam.input] || 'inactive');
+  const s   = STATES[key];
+
+  document.getElementById('screen-tally').style.background = s.bg;
+  document.getElementById('tally-state').style.color = s.text;
+  document.getElementById('tally-state').textContent = s.label;
+  document.getElementById('tally-status').textContent = bridgeOn ? '● Estudio conectado' : '● Estudio desconectado';
+
+  // Flash: encender solo en PGM
+  const wantTorch = (key === 'pgm');
+  setTorch(wantTorch);
+
+  // Vibrar al entrar en antena
+  if (key === 'pgm' && prevTallyKey !== 'pgm') {
+    navigator.vibrate && navigator.vibrate([100, 50, 100]);
+  }
+  prevTallyKey = key;
+
+  // Barra de PREVIO (solo modo plató)
+  if (mode === 'plato') {
+    const prevCamObj = CAMERAS_PLATO.find(c => (tallyInputs[c.input] || 'inactive') === 'prev');
+    document.getElementById('prev-cam').textContent = prevCamObj ? prevCamObj.label : '—';
+  }
+}
+
+// ── Socket ────────────────────────────────────────────────────
+const socket = io(window.location.origin, {
+  query: { role:'client' },
+  reconnection: true,
+  reconnectionDelay: 2000,
+});
+
+socket.on('connect', () => {
+  document.getElementById('menu-dot').classList.add('on');
+  document.getElementById('menu-conn').textContent = 'Conectado';
+  if (document.getElementById('sel-sub')) updateGrid();
+});
+
+socket.on('disconnect', () => {
+  document.getElementById('menu-dot').classList.remove('on');
+  document.getElementById('menu-conn').textContent = 'Reconectando...';
+  bridgeOn = false;
+  updateTallyScreen();
+});
+
+socket.on('bridge-status', data => {
+  bridgeOn = data.connected;
+  updateGrid();
+  updateTallyScreen();
+});
+
+socket.on('tally-update', data => {
+  tallyInputs = data.inputs || {};
+  updateGrid();
+  updateTallyScreen();
+});
+
+// ── Restaurar sesión ──────────────────────────────────────────
+const savedMode = localStorage.getItem('tallyMode');
+const savedCam  = localStorage.getItem('selectedCam');
+if (savedMode) {
+  enterMode(savedMode);
+  if (savedCam) {
+    const cam = (savedMode === 'plato' ? CAMERAS_PLATO : CAMERAS_ENG).find(c => c.input === savedCam);
+    if (cam) selectCam(cam);
+  }
+}
+</script>
 </body>
 </html>
