@@ -13,101 +13,130 @@
     *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
     body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#000;color:#fff;height:100dvh;overflow:hidden;user-select:none}
 
+    /* ── PERMISOS ── */
+    #screen-perms{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100dvh;padding:32px;padding-top:max(32px,env(safe-area-inset-top));text-align:center}
+    .perms-title{font-size:26px;font-weight:700;margin-bottom:12px}
+    .perms-sub{font-size:14px;color:#555;margin-bottom:40px;line-height:1.6}
+    .perm-item{width:100%;max-width:320px;padding:16px 18px;border-radius:14px;border:1.5px solid #1a1a1a;background:#111;margin-bottom:12px;display:flex;align-items:center;gap:14px}
+    .perm-icon{font-size:28px;flex-shrink:0}
+    .perm-text{text-align:left}
+    .perm-name{font-size:15px;font-weight:700;margin-bottom:2px}
+    .perm-desc{font-size:12px;color:#555}
+    .perm-check{margin-left:auto;font-size:20px;min-width:24px;text-align:center}
+    .perms-btn{width:100%;max-width:320px;height:56px;border-radius:16px;border:none;background:#fff;color:#000;font-size:17px;font-weight:700;cursor:pointer;margin-top:8px}
+    .perms-btn:active{background:#ddd}
+
     /* ── MENÚ ── */
     #screen-menu{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100dvh;padding:32px;padding-top:max(32px,env(safe-area-inset-top))}
     .menu-title{font-size:28px;font-weight:700;margin-bottom:6px;text-align:center}
-    .menu-sub{font-size:14px;color:#555;margin-bottom:40px;text-align:center}
+    .menu-sub{font-size:14px;color:#555;margin-bottom:36px;text-align:center}
     .menu-btn{width:100%;max-width:320px;padding:20px 18px;border-radius:16px;border:1.5px solid #222;background:#111;margin-bottom:14px;cursor:pointer;text-align:left;transition:border-color .2s,background .2s}
     .menu-btn:active{background:#1a1a1a}
     .menu-btn-title{font-size:19px;font-weight:700;margin-bottom:4px}
     .menu-btn-desc{font-size:13px;color:#555;line-height:1.4}
-    .menu-status{font-size:12px;color:#444;margin-top:28px}
-    .conn-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#333;margin-right:6px;transition:background .3s;vertical-align:middle}
+    .menu-status{font-size:13px;color:#444;margin-top:24px;display:flex;align-items:center;gap:8px}
+    .conn-dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:#333;transition:background .3s;flex-shrink:0}
     .conn-dot.on{background:#27ae60}
 
     /* ── SELECCIÓN ── */
     #screen-select{display:none;flex-direction:column;height:100dvh;padding:20px;padding-top:max(20px,env(safe-area-inset-top));padding-bottom:max(16px,env(safe-area-inset-bottom))}
     .sel-header{display:flex;align-items:center;gap:12px;margin-bottom:6px}
-    .back-small{font-size:13px;color:#444;cursor:pointer;padding:4px 0}
+    .back-btn-nav{font-size:16px;color:#666;cursor:pointer;padding:6px 10px 6px 0;display:flex;align-items:center;gap:6px;font-weight:600}
     .sel-title{font-size:20px;font-weight:700;flex:1}
-    .sel-sub{font-size:12px;color:#444;margin-bottom:18px}
+    .sel-sub{font-size:13px;color:#444;margin-bottom:18px}
     .grid{display:grid;gap:10px;flex:1;overflow-y:auto}
     .grid.g2{grid-template-columns:1fr 1fr}
     .grid.g3{grid-template-columns:1fr 1fr 1fr}
-    .cam-btn{border-radius:12px;border:1.5px solid #1a1a1a;background:#111;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;position:relative;padding:12px 8px;transition:border-color .15s,background .15s;min-height:70px}
+    .cam-btn{border-radius:12px;border:1.5px solid #1a1a1a;background:#111;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;position:relative;padding:12px 8px;transition:border-color .15s,background .15s;min-height:80px}
     .cam-btn.pgm{background:#CC0000;border-color:#CC0000}
     .cam-btn.prev{background:#007A00;border-color:#007A00}
     .cam-name{font-size:15px;font-weight:700;text-align:center}
-    .cam-badge{position:absolute;top:6px;right:8px;font-size:9px;font-weight:800;opacity:.85;letter-spacing:1px}
+    .cam-badge{position:absolute;top:7px;right:9px;font-size:10px;font-weight:800;opacity:.9;letter-spacing:1px}
 
     /* ── TALLY ── */
     #screen-tally{display:none;flex-direction:column;height:100dvh;position:relative;transition:background .12s}
-    .tally-back{position:absolute;top:max(16px,env(safe-area-inset-top));left:16px;font-size:13px;color:rgba(255,255,255,.3);cursor:pointer;padding:8px;z-index:10}
-    .tally-main{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center}
-    .tally-state{font-size:clamp(36px,11vw,60px);font-weight:900;letter-spacing:4px;text-align:center;transition:color .12s}
-    .tally-cam{font-size:17px;font-weight:400;margin-top:10px;opacity:.6;letter-spacing:2px}
-    .tally-status{position:absolute;bottom:max(130px,calc(env(safe-area-inset-bottom)+130px));width:100%;text-align:center;font-size:11px;color:rgba(255,255,255,.18);letter-spacing:1px;pointer-events:none}
-    .tally-footer{padding:14px 20px;padding-bottom:max(20px,env(safe-area-inset-bottom));text-align:center;border-top:1px solid rgba(255,255,255,.07)}
-    .prev-label{font-size:11px;color:rgba(255,255,255,.3);letter-spacing:2px;text-transform:uppercase;margin-bottom:4px}
-    .prev-cam{font-size:16px;font-weight:600;color:#27ae60;min-height:22px}
 
-    /* ── INTERCOM BAR (dentro de tally) ── */
-    .intercom-bar{
-      position:absolute;bottom:0;left:0;right:0;
-      padding:10px 16px;
-      padding-bottom:max(14px,env(safe-area-inset-bottom));
-      background:rgba(0,0,0,.6);
-      backdrop-filter:blur(12px);
-      display:flex;align-items:center;gap:10px;
-      border-top:1px solid rgba(255,255,255,.08);
-      z-index:20;
-    }
-    .ptt-btn{
-      flex:1;height:52px;border-radius:14px;border:none;
-      background:#1a1a1a;color:#888;font-size:15px;font-weight:700;
-      letter-spacing:1px;cursor:pointer;transition:background .1s,color .1s;
-      display:flex;align-items:center;justify-content:center;gap:8px;
-      -webkit-user-select:none;touch-action:none;
-    }
-    .ptt-btn.active{background:#e67e22;color:#fff}
-    .ptt-btn.speaking{background:#e67e22;color:#fff;box-shadow:0 0 0 3px rgba(230,126,34,.4)}
-    .ic-status{font-size:11px;color:#444;text-align:right;min-width:60px;line-height:1.4}
-    .ic-status.joined{color:#27ae60}
-    .speakers-row{position:absolute;bottom:80px;left:0;right:0;display:flex;justify-content:center;gap:8px;padding:4px 16px;pointer-events:none}
-    .speaker-chip{background:rgba(230,126,34,.85);color:#fff;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;letter-spacing:.5px}
+    /* Botón volver — grande y bien visible */
+    .tally-nav{display:flex;align-items:center;gap:8px;padding:16px 20px;padding-top:max(16px,env(safe-area-inset-top));background:rgba(0,0,0,.3);cursor:pointer;position:relative;z-index:10}
+    .tally-nav-arrow{font-size:22px;color:rgba(255,255,255,.7)}
+    .tally-nav-label{font-size:15px;color:rgba(255,255,255,.6);font-weight:600}
+    .tally-nav-cam{font-size:13px;color:rgba(255,255,255,.35);margin-left:auto}
+
+    .tally-main{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center}
+    .tally-state{font-size:clamp(40px,13vw,68px);font-weight:900;letter-spacing:4px;text-align:center;transition:color .12s}
+    .tally-cam{font-size:18px;font-weight:500;margin-top:12px;opacity:.55;letter-spacing:2px}
+
+    /* Quién habla — GRANDE y visible */
+    .speakers-row{display:flex;flex-direction:column;align-items:center;gap:8px;padding:0 20px;min-height:60px;justify-content:center}
+    .speaker-chip{background:rgba(230,126,34,.9);color:#fff;font-size:18px;font-weight:800;padding:8px 20px;border-radius:30px;letter-spacing:.5px;text-align:center}
+
+    .tally-footer{padding:12px 20px;padding-bottom:max(8px,env(safe-area-inset-bottom));text-align:center;border-top:1px solid rgba(255,255,255,.07)}
+    .prev-label{font-size:11px;color:rgba(255,255,255,.3);letter-spacing:2px;text-transform:uppercase;margin-bottom:4px}
+    .prev-cam{font-size:17px;font-weight:700;color:#27ae60;min-height:24px}
+
+    /* Barra intercom */
+    .intercom-bar{padding:10px 16px;padding-bottom:max(14px,env(safe-area-inset-bottom));background:rgba(0,0,0,.5);backdrop-filter:blur(12px);display:flex;align-items:center;gap:10px;border-top:1px solid rgba(255,255,255,.08)}
+    .ptt-btn{flex:1;height:56px;border-radius:14px;border:none;background:#1c1c1c;color:#666;font-size:16px;font-weight:800;letter-spacing:1px;cursor:pointer;transition:background .1s,color .1s;display:flex;align-items:center;justify-content:center;gap:8px;-webkit-user-select:none;touch-action:none}
+    .ptt-btn.active{background:#e67e22;color:#fff;box-shadow:0 0 0 3px rgba(230,126,34,.4)}
+    .ic-badge{font-size:11px;color:#333;text-align:right;min-width:52px;line-height:1.5}
+    .ic-badge.on{color:#27ae60}
 
     /* ── INTERCOM STANDALONE ── */
-    #screen-intercom{display:none;flex-direction:column;height:100dvh;padding:20px;padding-top:max(20px,env(safe-area-inset-top));padding-bottom:max(20px,env(safe-area-inset-bottom))}
-    .ic-header{display:flex;align-items:center;gap:12px;margin-bottom:24px}
+    #screen-intercom{display:none;flex-direction:column;height:100dvh;padding:0;padding-top:max(0px,env(safe-area-inset-top))}
+    .ic-nav{display:flex;align-items:center;gap:8px;padding:16px 20px;cursor:pointer}
     .ic-title{font-size:20px;font-weight:700;flex:1}
-    .ic-room-info{font-size:12px;color:#444;margin-bottom:20px}
-    .participants-list{flex:1;overflow-y:auto;margin-bottom:16px}
-    .participant-row{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid #111}
-    .p-avatar{width:36px;height:36px;border-radius:50%;background:#1a1a1a;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#666;flex-shrink:0}
+    .ic-room-badge{font-size:12px;color:#444;padding:14px 20px 0}
+    .participants-list{flex:1;overflow-y:auto;padding:0 20px}
+    .participant-row{display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:1px solid #111}
+    .p-avatar{width:42px;height:42px;border-radius:50%;background:#1a1a1a;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;color:#555;flex-shrink:0;transition:background .2s}
     .p-avatar.speaking{background:#e67e22;color:#fff}
-    .p-name{flex:1;font-size:15px;font-weight:600}
-    .p-role{font-size:11px;color:#444}
-    .ptt-big{width:100%;height:72px;border-radius:20px;border:none;background:#1a1a1a;color:#777;font-size:18px;font-weight:800;letter-spacing:2px;cursor:pointer;transition:background .1s,color .1s,box-shadow .1s;-webkit-user-select:none;touch-action:none}
-    .ptt-big.active{background:#e67e22;color:#fff;box-shadow:0 0 0 4px rgba(230,126,34,.35)}
+    .p-name{font-size:16px;font-weight:700;flex:1}
+    .p-speaking{font-size:13px;color:#e67e22;font-weight:600}
+    .p-idle{font-size:13px;color:#333}
+    .ptt-big{margin:16px 20px;margin-bottom:max(20px,env(safe-area-inset-bottom));height:80px;border-radius:20px;border:none;background:#1c1c1c;color:#555;font-size:20px;font-weight:800;letter-spacing:2px;cursor:pointer;transition:background .1s,color .1s,box-shadow .1s;-webkit-user-select:none;touch-action:none;display:flex;align-items:center;justify-content:center;gap:10px}
+    .ptt-big.active{background:#e67e22;color:#fff;box-shadow:0 0 0 5px rgba(230,126,34,.3)}
   </style>
 </head>
 <body>
 
+<!-- PERMISOS -->
+<div id="screen-perms">
+  <div class="perms-title">Bienvenido a Tally</div>
+  <div class="perms-sub">Esta app necesita acceso a tu micrófono y cámara para funcionar correctamente</div>
+  <div class="perm-item">
+    <div class="perm-icon">🎙</div>
+    <div class="perm-text">
+      <div class="perm-name">Micrófono</div>
+      <div class="perm-desc">Para el intercom con el equipo</div>
+    </div>
+    <div class="perm-check" id="perm-mic-check">—</div>
+  </div>
+  <div class="perm-item">
+    <div class="perm-icon">📷</div>
+    <div class="perm-text">
+      <div class="perm-name">Cámara (flash)</div>
+      <div class="perm-desc">Para encender la luz de aviso</div>
+    </div>
+    <div class="perm-check" id="perm-cam-check">—</div>
+  </div>
+  <button class="perms-btn" id="perms-btn" onclick="requestPerms()">Conceder permisos</button>
+</div>
+
 <!-- MENÚ -->
-<div id="screen-menu">
+<div id="screen-menu" style="display:none">
   <div class="menu-title">Tally Remote</div>
   <div class="menu-sub">Selecciona tu modo de trabajo</div>
   <div class="menu-btn" onclick="enterMode('plato')">
     <div class="menu-btn-title">📺 &nbsp;Plató</div>
-    <div class="menu-btn-desc">Hasta 6 cámaras · Flash en antena · Previo visible · Intercom integrado</div>
+    <div class="menu-btn-desc">Hasta 6 cámaras · Flash en antena · Previo visible · Intercom</div>
   </div>
   <div class="menu-btn" onclick="enterMode('eng')">
     <div class="menu-btn-title">🎥 &nbsp;ENG Directo</div>
-    <div class="menu-btn-desc">Hasta 24 entradas · Flash en directo · Intercom integrado</div>
+    <div class="menu-btn-desc">Hasta 24 entradas · Flash en directo · Intercom</div>
   </div>
   <div class="menu-btn" onclick="enterIntercomAlone()">
     <div class="menu-btn-title">🎙️ &nbsp;Solo Intercom</div>
-    <div class="menu-btn-desc">Para el control de realización o técnicos sin tally</div>
+    <div class="menu-btn-desc">Realización, técnicos o personal sin tally</div>
   </div>
   <div class="menu-status">
     <span class="conn-dot" id="menu-dot"></span>
@@ -115,10 +144,10 @@
   </div>
 </div>
 
-<!-- SELECCIÓN CÁMARA -->
+<!-- SELECCIÓN -->
 <div id="screen-select">
   <div class="sel-header">
-    <span class="back-small" onclick="goMenu()">⟵</span>
+    <span class="back-btn-nav" onclick="goMenu()">← Menú</span>
     <span class="sel-title" id="sel-title">Selecciona tu cámara</span>
   </div>
   <div class="sel-sub" id="sel-sub"></div>
@@ -127,38 +156,37 @@
 
 <!-- TALLY -->
 <div id="screen-tally">
-  <div class="tally-back" onclick="goSelect()">⟵</div>
+  <div class="tally-nav" onclick="goSelect()">
+    <span class="tally-nav-arrow">←</span>
+    <span class="tally-nav-label">Cambiar cámara</span>
+    <span class="tally-nav-cam" id="tally-nav-cam"></span>
+  </div>
   <div class="tally-main">
     <div class="tally-state" id="tally-state">LIBRE</div>
     <div class="tally-cam"   id="tally-cam"></div>
   </div>
-  <div class="tally-status" id="tally-status"></div>
+  <div class="speakers-row" id="speakers-row"></div>
   <div class="tally-footer" id="tally-footer" style="display:none">
     <div class="prev-label">En previo</div>
     <div class="prev-cam" id="prev-cam">—</div>
   </div>
-
-  <!-- Speakers hablando -->
-  <div class="speakers-row" id="speakers-row"></div>
-
-  <!-- Barra intercom -->
   <div class="intercom-bar">
     <button class="ptt-btn" id="ptt-tally"
       ontouchstart="pttStart(event)" ontouchend="pttStop(event)"
       onmousedown="pttStart(event)" onmouseup="pttStop(event)" onmouseleave="pttStop(event)">
-      🎙 HABLAR
+      🎙 &nbsp;HABLAR
     </button>
-    <div class="ic-status" id="ic-status-tally">Intercom<br>desconectado</div>
+    <div class="ic-badge" id="ic-badge-tally">—</div>
   </div>
 </div>
 
 <!-- INTERCOM STANDALONE -->
 <div id="screen-intercom">
-  <div class="ic-header">
-    <span class="back-small" onclick="goMenu()">⟵</span>
+  <div class="ic-nav" onclick="goMenu()">
+    <span class="tally-nav-arrow">←</span>
     <span class="ic-title">🎙️ Intercom</span>
   </div>
-  <div class="ic-room-info" id="ic-room-info">Conectando...</div>
+  <div class="ic-room-badge" id="ic-room-badge">Conectando...</div>
   <div class="participants-list" id="participants-list"></div>
   <button class="ptt-big" id="ptt-big"
     ontouchstart="pttStart(event)" ontouchend="pttStop(event)"
@@ -167,329 +195,291 @@
   </button>
 </div>
 
-<!-- LiveKit SDK -->
 <script src="https://cdn.jsdelivr.net/npm/livekit-client@2.5.6/dist/livekit-client.umd.min.js"></script>
-<!-- Socket.io -->
 <script src="https://cdn.socket.io/4.7.4/socket.io.min.js"></script>
-
 <script>
-// ═══════════════════════════════════════════════════════════
-//  CONFIGURACIÓN
-// ═══════════════════════════════════════════════════════════
 const CAMERAS_PLATO = Array.from({length:6},  (_,i)=>({label:`Cámara ${i+1}`, input:`input${i+1}`}));
 const CAMERAS_ENG   = Array.from({length:24}, (_,i)=>({label:`CAM ${i+1}`,    input:`input${i+1}`}));
 const STATES = {
-  pgm:     {bg:'#CC0000', label:'EN ANTENA', text:'#fff'},
-  prev:    {bg:'#007A00', label:'EN PREVIO', text:'#fff'},
-  inactive:{bg:'#111111', label:'LIBRE',     text:'#2a2a2a'},
-  offline: {bg:'#0a0a0a', label:'SIN SEÑAL', text:'#1a1a1a'},
+  pgm:     {bg:'#CC0000',label:'EN ANTENA',text:'#fff'},
+  prev:    {bg:'#007A00',label:'EN PREVIO',text:'#fff'},
+  inactive:{bg:'#111111',label:'LIBRE',    text:'#2a2a2a'},
+  offline: {bg:'#0a0a0a',label:'SIN SEÑAL',text:'#1a1a1a'},
 };
 
-// ═══════════════════════════════════════════════════════════
-//  ESTADO GLOBAL
-// ═══════════════════════════════════════════════════════════
-let mode         = null;
-let cameras      = [];
-let selectedCam  = null;
-let tallyInputs  = {};
-let bridgeOn     = false;
-let prevTallyKey = null;
-let wakeLock     = null;
-let torchTrack   = null;
-let torchActive  = false;
+let mode=null, cameras=[], selectedCam=null;
+let tallyInputs={}, bridgeOn=false, prevTallyKey=null;
+let wakeLock=null, torchTrack=null, torchActive=false;
+let lkRoom=null, localAudioTrack=null, myIdentity=null;
+let activeSpeakers=new Set(), pttActive=false;
+let permsMic=false, permsCam=false;
 
-// LiveKit
-let lkRoom       = null;
-let localAudioTrack = null;
-let isMuted      = true;   // micrófono siempre muteado salvo PTT
-let myIdentity   = null;
-let activeSpeakers = new Set();
+// ── PERMISOS ─────────────────────────────────────────────────
+async function requestPerms() {
+  const btn = document.getElementById('perms-btn');
+  btn.textContent = 'Solicitando...';
+  btn.disabled = true;
 
-// ═══════════════════════════════════════════════════════════
-//  TORCH / FLASH
-// ═══════════════════════════════════════════════════════════
-async function initTorch() {
-  if (torchTrack) return;
+  // Micrófono
   try {
-    const stream = await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}});
-    torchTrack = stream.getVideoTracks()[0];
-  } catch(e) {}
+    const s = await navigator.mediaDevices.getUserMedia({audio:true});
+    s.getTracks().forEach(t=>t.stop());
+    permsMic = true;
+    document.getElementById('perm-mic-check').textContent = '✅';
+  } catch(e) {
+    document.getElementById('perm-mic-check').textContent = '❌';
+  }
+
+  // Cámara trasera para flash
+  try {
+    const s = await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}});
+    torchTrack = s.getVideoTracks()[0];
+    permsCam = true;
+    document.getElementById('perm-cam-check').textContent = '✅';
+  } catch(e) {
+    document.getElementById('perm-cam-check').textContent = '❌';
+    permsCam = false;
+  }
+
+  localStorage.setItem('permsGranted', '1');
+  setTimeout(()=>show('screen-menu'), 600);
 }
+
 async function setTorch(on) {
-  if (!torchTrack || torchActive === on) return;
-  try { await torchTrack.applyConstraints({advanced:[{torch:on}]}); torchActive = on; } catch(e) {}
+  if (!torchTrack || torchActive===on) return;
+  // Reintentar obtener cámara si se perdió el track
+  if (torchTrack.readyState === 'ended') {
+    try {
+      const s = await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}});
+      torchTrack = s.getVideoTracks()[0];
+    } catch(e) { return; }
+  }
+  try { await torchTrack.applyConstraints({advanced:[{torch:on}]}); torchActive=on; } catch(e) {}
 }
 
-// ═══════════════════════════════════════════════════════════
-//  WAKE LOCK
-// ═══════════════════════════════════════════════════════════
-async function requestWakeLock() {
-  try { if ('wakeLock' in navigator) wakeLock = await navigator.wakeLock.request('screen'); } catch(e) {}
-}
-
-// ═══════════════════════════════════════════════════════════
-//  NAVEGACIÓN
-// ═══════════════════════════════════════════════════════════
+// ── NAVEGACIÓN ────────────────────────────────────────────────
 function show(id) {
-  ['screen-menu','screen-select','screen-tally','screen-intercom'].forEach(s=>{
-    document.getElementById(s).style.display = s===id ? 'flex' : 'none';
+  ['screen-perms','screen-menu','screen-select','screen-tally','screen-intercom'].forEach(s=>{
+    document.getElementById(s).style.display = s===id?'flex':'none';
   });
 }
-function goMenu() {
-  setTorch(false);
-  leaveRoom();
-  selectedCam = null; mode = null;
-  show('screen-menu');
-}
-function goSelect() {
-  setTorch(false);
-  selectedCam = null;
-  buildGrid();
-  show('screen-select');
-}
+function goMenu() { setTorch(false); leaveRoom(); selectedCam=null; mode=null; show('screen-menu'); }
+function goSelect() { setTorch(false); selectedCam=null; buildGrid(); show('screen-select'); }
+
 function enterMode(m) {
-  mode    = m;
-  cameras = m==='plato' ? CAMERAS_PLATO : CAMERAS_ENG;
-  document.getElementById('sel-title').textContent = m==='plato' ? 'Selecciona tu cámara' : 'Selecciona tu entrada';
-  document.getElementById('tally-footer').style.display = m==='plato' ? 'block' : 'none';
-  buildGrid();
-  show('screen-select');
-  localStorage.setItem('tallyMode', m);
+  mode=m; cameras=m==='plato'?CAMERAS_PLATO:CAMERAS_ENG;
+  document.getElementById('sel-title').textContent = m==='plato'?'Selecciona tu cámara':'Selecciona tu entrada';
+  document.getElementById('tally-footer').style.display = m==='plato'?'block':'none';
+  buildGrid(); show('screen-select');
+  localStorage.setItem('tallyMode',m);
 }
+
 function enterIntercomAlone() {
-  const name = prompt('¿Cómo te llamas? (ej: Realización, Sonido...)');
+  const name = prompt('¿Cómo te identificas? (ej: Realización, Sonido...)');
   if (!name) return;
   myIdentity = name.trim();
   show('screen-intercom');
   joinIntercom(myIdentity);
 }
 
-// ═══════════════════════════════════════════════════════════
-//  GRID DE CÁMARAS
-// ═══════════════════════════════════════════════════════════
+// ── GRID ──────────────────────────────────────────────────────
 function buildGrid() {
   const grid = document.getElementById('cam-grid');
-  grid.className = 'grid ' + (mode==='eng' ? 'g3' : 'g2');
+  grid.className = 'grid '+(mode==='eng'?'g3':'g2');
   grid.innerHTML = '';
   const sub = document.getElementById('sel-sub');
-  sub.textContent = bridgeOn ? '● Estudio conectado' : '● Estudio desconectado';
-  sub.style.color = bridgeOn ? '#27ae60' : '#555';
-  cameras.forEach(cam => {
-    const state = tallyInputs[cam.input] || 'inactive';
+  sub.textContent = bridgeOn?'● Estudio conectado':'● Estudio desconectado';
+  sub.style.color = bridgeOn?'#27ae60':'#555';
+  cameras.forEach(cam=>{
+    const state = tallyInputs[cam.input]||'inactive';
     const btn = document.createElement('div');
-    btn.className = 'cam-btn '+(state==='pgm'?'pgm':state==='prev'?'prev':'');
-    btn.id = 'btn-'+cam.input;
-    btn.innerHTML = `<span class="cam-name">${cam.label}</span><span class="cam-badge" id="badge-${cam.input}">${state==='pgm'?'PGM':state==='prev'?'PRV':''}</span>`;
-    btn.addEventListener('click', ()=>selectCam(cam));
+    btn.className='cam-btn '+(state==='pgm'?'pgm':state==='prev'?'prev':'');
+    btn.id='btn-'+cam.input;
+    btn.innerHTML=`<span class="cam-name">${cam.label}</span><span class="cam-badge" id="badge-${cam.input}">${state==='pgm'?'PGM':state==='prev'?'PRV':''}</span>`;
+    btn.addEventListener('click',()=>selectCam(cam));
     grid.appendChild(btn);
   });
 }
 function updateGrid() {
-  cameras.forEach(cam => {
-    const btn   = document.getElementById('btn-'+cam.input);
-    const badge = document.getElementById('badge-'+cam.input);
-    if (!btn) return;
-    const state = tallyInputs[cam.input] || 'inactive';
-    btn.className = 'cam-btn '+(state==='pgm'?'pgm':state==='prev'?'prev':'');
-    badge.textContent = state==='pgm'?'PGM':state==='prev'?'PRV':'';
+  cameras.forEach(cam=>{
+    const btn=document.getElementById('btn-'+cam.input);
+    const badge=document.getElementById('badge-'+cam.input);
+    if(!btn)return;
+    const state=tallyInputs[cam.input]||'inactive';
+    btn.className='cam-btn '+(state==='pgm'?'pgm':state==='prev'?'prev':'');
+    badge.textContent=state==='pgm'?'PGM':state==='prev'?'PRV':'';
   });
 }
 
-// ═══════════════════════════════════════════════════════════
-//  SELECCIONAR CÁMARA
-// ═══════════════════════════════════════════════════════════
+// ── SELECCIONAR CÁMARA ────────────────────────────────────────
 async function selectCam(cam) {
-  selectedCam = cam;
-  myIdentity  = cam.label;
-  localStorage.setItem('selectedCam', cam.input);
-  document.getElementById('tally-cam').textContent = cam.label;
+  selectedCam=cam; myIdentity=cam.label;
+  localStorage.setItem('selectedCam',cam.input);
+  document.getElementById('tally-cam').textContent=cam.label;
+  document.getElementById('tally-nav-cam').textContent=cam.label;
   show('screen-tally');
   updateTallyScreen();
-  requestWakeLock();
-  await initTorch();
+  try { if('wakeLock'in navigator) wakeLock=await navigator.wakeLock.request('screen'); }catch(e){}
   joinIntercom(cam.label);
 }
 
-// ═══════════════════════════════════════════════════════════
-//  PANTALLA TALLY
-// ═══════════════════════════════════════════════════════════
+// ── TALLY ─────────────────────────────────────────────────────
 function updateTallyScreen() {
-  if (!selectedCam) return;
-  const key = !bridgeOn ? 'offline' : (tallyInputs[selectedCam.input] || 'inactive');
-  const s   = STATES[key];
-  document.getElementById('screen-tally').style.background = s.bg;
-  document.getElementById('tally-state').style.color  = s.text;
-  document.getElementById('tally-state').textContent  = s.label;
-  document.getElementById('tally-status').textContent = bridgeOn ? '● Estudio conectado' : '● Estudio desconectado';
-  setTorch(key === 'pgm');
-  if (key==='pgm' && prevTallyKey!=='pgm') navigator.vibrate && navigator.vibrate([100,50,100]);
-  prevTallyKey = key;
-  if (mode==='plato') {
-    const pc = CAMERAS_PLATO.find(c=>(tallyInputs[c.input]||'inactive')==='prev');
-    document.getElementById('prev-cam').textContent = pc ? pc.label : '—';
+  if(!selectedCam)return;
+  const key=!bridgeOn?'offline':(tallyInputs[selectedCam.input]||'inactive');
+  const s=STATES[key];
+  document.getElementById('screen-tally').style.background=s.bg;
+  document.getElementById('tally-state').style.color=s.text;
+  document.getElementById('tally-state').textContent=s.label;
+  setTorch(key==='pgm');
+  if(key==='pgm'&&prevTallyKey!=='pgm') navigator.vibrate&&navigator.vibrate([100,50,100]);
+  prevTallyKey=key;
+  if(mode==='plato'){
+    const pc=CAMERAS_PLATO.find(c=>(tallyInputs[c.input]||'inactive')==='prev');
+    document.getElementById('prev-cam').textContent=pc?pc.label:'—';
   }
 }
 
-// ═══════════════════════════════════════════════════════════
-//  LIVEKIT — INTERCOM
-// ═══════════════════════════════════════════════════════════
+// ── SPEAKERS ROW ──────────────────────────────────────────────
+function updateSpeakersRow() {
+  const row=document.getElementById('speakers-row');
+  if(!row)return;
+  row.innerHTML='';
+  activeSpeakers.forEach(id=>{
+    const chip=document.createElement('div');
+    chip.className='speaker-chip';
+    chip.textContent='🎙 '+id;
+    row.appendChild(chip);
+  });
+}
+
+// ── LIVEKIT ───────────────────────────────────────────────────
 async function joinIntercom(identity) {
-  if (lkRoom) await leaveRoom();
-
+  if(lkRoom)await leaveRoom();
   try {
-    // Pedir token al servidor
-    const res  = await fetch(`/livekit-token?room=intercom&identity=${encodeURIComponent(identity)}`);
-    const data = await res.json();
-
-    lkRoom = new LivekitClient.Room({
-      audioCaptureDefaults: { echoCancellation:true, noiseSuppression:true, autoGainControl:true },
-      adaptiveStream: true,
+    const res=await fetch(`/livekit-token?room=intercom&identity=${encodeURIComponent(identity)}`);
+    const data=await res.json();
+    lkRoom=new LivekitClient.Room({
+      audioCaptureDefaults:{echoCancellation:true,noiseSuppression:true,autoGainControl:true},
+      adaptiveStream:true,
     });
-
-    // Eventos de sala
     lkRoom.on(LivekitClient.RoomEvent.ParticipantConnected,    updateParticipants);
     lkRoom.on(LivekitClient.RoomEvent.ParticipantDisconnected, updateParticipants);
     lkRoom.on(LivekitClient.RoomEvent.TrackSubscribed,         onTrackSubscribed);
     lkRoom.on(LivekitClient.RoomEvent.TrackUnsubscribed,       onTrackUnsubscribed);
     lkRoom.on(LivekitClient.RoomEvent.ActiveSpeakersChanged,   onSpeakersChanged);
-    lkRoom.on(LivekitClient.RoomEvent.Disconnected,            onRoomDisconnected);
+    lkRoom.on(LivekitClient.RoomEvent.Disconnected,            ()=>setIcStatus(false));
 
-    // Conectar — publicar audio muteado (PTT: solo habla cuando se pulsa)
     await lkRoom.connect(data.url, data.token);
-    localAudioTrack = await LivekitClient.createLocalAudioTrack({
-      echoCancellation:true, noiseSuppression:true, autoGainControl:true
-    });
-    await lkRoom.localParticipant.publishTrack(localAudioTrack, { muted: true });
-
-    setIntercomStatus('joined', '● Intercom\nconectado');
+    localAudioTrack=await LivekitClient.createLocalAudioTrack({echoCancellation:true,noiseSuppression:true,autoGainControl:true});
+    await lkRoom.localParticipant.publishTrack(localAudioTrack,{muted:true});
+    setIcStatus(true, identity);
     updateParticipants();
   } catch(e) {
-    console.error('LiveKit error:', e);
-    setIntercomStatus('', '⚠ Error\nintercom');
+    console.error('LiveKit error:',e);
+    setIcStatus(false);
   }
 }
 
 async function leaveRoom() {
-  if (lkRoom) { await lkRoom.disconnect(); lkRoom = null; }
-  if (localAudioTrack) { localAudioTrack.stop(); localAudioTrack = null; }
-  setIntercomStatus('', 'Intercom\ndesconectado');
+  if(lkRoom){await lkRoom.disconnect();lkRoom=null;}
+  if(localAudioTrack){localAudioTrack.stop();localAudioTrack=null;}
+  setIcStatus(false);
 }
 
-function setIntercomStatus(cls, text) {
-  const el = document.getElementById('ic-status-tally');
-  if (el) { el.className = 'ic-status '+(cls||''); el.textContent = text; }
-  const el2 = document.getElementById('ic-room-info');
-  if (el2) el2.textContent = cls==='joined' ? `✅ Sala: intercom · ${myIdentity}` : text;
+function setIcStatus(on, identity) {
+  const badge=document.getElementById('ic-badge-tally');
+  if(badge){badge.className='ic-badge '+(on?'on':'');badge.textContent=on?'● IC\nactivo':'● IC\noffline';}
+  const rb=document.getElementById('ic-room-badge');
+  if(rb) rb.textContent=on?`✅ Sala intercom · ${identity}`:'Conectando...';
 }
 
-// ── Audio entrante ────────────────────────────────────────
 function onTrackSubscribed(track) {
-  if (track.kind === LivekitClient.Track.Kind.Audio) {
-    const el = track.attach();
-    el.id = 'audio-'+track.sid;
-    document.body.appendChild(el);
+  if(track.kind===LivekitClient.Track.Kind.Audio){
+    const el=track.attach(); el.id='audio-'+track.sid; document.body.appendChild(el);
   }
 }
-function onTrackUnsubscribed(track) {
-  const el = document.getElementById('audio-'+track.sid);
-  if (el) el.remove();
+function onTrackUnsubscribed(track){
+  const el=document.getElementById('audio-'+track.sid); if(el)el.remove();
 }
-
-// ── Quién está hablando ───────────────────────────────────
-function onSpeakersChanged(speakers) {
-  activeSpeakers = new Set(speakers.map(s=>s.identity));
-  updateSpeakersRow();
-  updateParticipants();
+function onSpeakersChanged(speakers){
+  activeSpeakers=new Set(speakers.map(s=>s.identity));
+  updateSpeakersRow(); updateParticipants();
 }
-function updateSpeakersRow() {
-  const row = document.getElementById('speakers-row');
-  if (!row) return;
-  row.innerHTML = '';
-  activeSpeakers.forEach(id => {
-    if (id === myIdentity) return;
-    const chip = document.createElement('div');
-    chip.className = 'speaker-chip';
-    chip.textContent = '🎙 '+id;
-    row.appendChild(chip);
-  });
-}
-
-// ── Lista de participantes (pantalla intercom standalone) ─
-function updateParticipants() {
-  const list = document.getElementById('participants-list');
-  if (!list || !lkRoom) return;
-  list.innerHTML = '';
-  const all = [lkRoom.localParticipant, ...lkRoom.remoteParticipants.values()];
-  all.forEach(p => {
-    const speaking = activeSpeakers.has(p.identity);
-    const row = document.createElement('div');
-    row.className = 'participant-row';
-    row.innerHTML = `
+function updateParticipants(){
+  const list=document.getElementById('participants-list');
+  if(!list||!lkRoom)return;
+  list.innerHTML='';
+  const all=[lkRoom.localParticipant,...lkRoom.remoteParticipants.values()];
+  all.forEach(p=>{
+    const speaking=activeSpeakers.has(p.identity);
+    const row=document.createElement('div');
+    row.className='participant-row';
+    row.innerHTML=`
       <div class="p-avatar ${speaking?'speaking':''}">${p.identity.charAt(0).toUpperCase()}</div>
-      <div>
-        <div class="p-name">${p.identity} ${p.isLocal?'(tú)':''}</div>
-        <div class="p-role">${speaking?'🎙 Hablando...':'En escucha'}</div>
+      <div style="flex:1">
+        <div class="p-name">${p.identity}${p.isLocal?' (tú)':''}</div>
+        <div class="${speaking?'p-speaking':'p-idle'}">${speaking?'🎙 Hablando...':'En escucha'}</div>
       </div>`;
     list.appendChild(row);
   });
 }
 
-// ═══════════════════════════════════════════════════════════
-//  PUSH-TO-TALK
-// ═══════════════════════════════════════════════════════════
-let pttActive = false;
-
-async function pttStart(e) {
+// ── PTT ───────────────────────────────────────────────────────
+async function pttStart(e){
   e.preventDefault();
-  if (pttActive) return;
-  pttActive = true;
-  if (localAudioTrack) await localAudioTrack.unmute();
-  // Actualizar botones
-  document.querySelectorAll('.ptt-btn, .ptt-big').forEach(b => b.classList.add('active'));
+  if(pttActive)return;
+  pttActive=true;
+  if(localAudioTrack)await localAudioTrack.unmute();
+  document.querySelectorAll('.ptt-btn,.ptt-big').forEach(b=>b.classList.add('active'));
+}
+async function pttStop(e){
+  if(e)e.preventDefault();
+  if(!pttActive)return;
+  pttActive=false;
+  if(localAudioTrack)await localAudioTrack.mute();
+  document.querySelectorAll('.ptt-btn,.ptt-big').forEach(b=>b.classList.remove('active'));
 }
 
-async function pttStop(e) {
-  if (e) e.preventDefault();
-  if (!pttActive) return;
-  pttActive = false;
-  if (localAudioTrack) await localAudioTrack.mute();
-  document.querySelectorAll('.ptt-btn, .ptt-big').forEach(b => b.classList.remove('active'));
-}
+// Soporte teclado (auriculares con botón central / barra espaciadora)
+document.addEventListener('keydown', e=>{ if(e.code==='Space'&&!pttActive){ e.preventDefault(); pttStart(e); }});
+document.addEventListener('keyup',   e=>{ if(e.code==='Space'){ e.preventDefault(); pttStop(e); }});
 
-function onRoomDisconnected() {
-  setIntercomStatus('', 'Intercom\ndesconectado');
-  updateParticipants();
-}
-
-// ═══════════════════════════════════════════════════════════
-//  SOCKET.IO — TALLY
-// ═══════════════════════════════════════════════════════════
-const socket = io(window.location.origin, {
-  query:{role:'client'}, reconnection:true, reconnectionDelay:2000
-});
-socket.on('connect', () => {
+// ── SOCKET.IO ─────────────────────────────────────────────────
+const socket=io(window.location.origin,{query:{role:'client'},reconnection:true,reconnectionDelay:2000});
+socket.on('connect',()=>{
   document.getElementById('menu-dot').classList.add('on');
-  document.getElementById('menu-conn').textContent = 'Conectado';
+  document.getElementById('menu-conn').textContent='Conectado al relay';
 });
-socket.on('disconnect', () => {
+socket.on('disconnect',()=>{
   document.getElementById('menu-dot').classList.remove('on');
-  document.getElementById('menu-conn').textContent = 'Reconectando...';
-  bridgeOn = false; updateTallyScreen();
+  document.getElementById('menu-conn').textContent='Reconectando...';
+  bridgeOn=false; updateTallyScreen();
 });
-socket.on('bridge-status', data => { bridgeOn = data.connected; updateGrid(); updateTallyScreen(); });
-socket.on('tally-update',  data => { tallyInputs = data.inputs||{}; updateGrid(); updateTallyScreen(); });
+socket.on('bridge-status',data=>{bridgeOn=data.connected;updateGrid();updateTallyScreen();});
+socket.on('tally-update', data=>{tallyInputs=data.inputs||{};updateGrid();updateTallyScreen();});
 
-// ═══════════════════════════════════════════════════════════
-//  RESTAURAR SESIÓN
-// ═══════════════════════════════════════════════════════════
-const savedMode = localStorage.getItem('tallyMode');
-const savedCam  = localStorage.getItem('selectedCam');
-if (savedMode) {
-  enterMode(savedMode);
-  if (savedCam) {
-    const cam = (savedMode==='plato'?CAMERAS_PLATO:CAMERAS_ENG).find(c=>c.input===savedCam);
-    if (cam) selectCam(cam);
-  }
+// ── INICIO ────────────────────────────────────────────────────
+// Si ya dio permisos antes, ir directo al menú
+// Si no, mostrar pantalla de permisos
+if(localStorage.getItem('permsGranted')==='1'){
+  // Intentar recuperar cámara para flash silenciosamente
+  navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}})
+    .then(s=>{ torchTrack=s.getVideoTracks()[0]; })
+    .catch(()=>{});
+  // Restaurar sesión
+  const savedMode=localStorage.getItem('tallyMode');
+  const savedCam=localStorage.getItem('selectedCam');
+  if(savedMode){
+    enterMode(savedMode);
+    if(savedCam){
+      const cam=(savedMode==='plato'?CAMERAS_PLATO:CAMERAS_ENG).find(c=>c.input===savedCam);
+      if(cam)selectCam(cam);
+      else show('screen-select');
+    } else show('screen-select');
+  } else show('screen-menu');
+} else {
+  show('screen-perms');
 }
 </script>
 </body>
