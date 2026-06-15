@@ -551,7 +551,15 @@ async function joinIntercom(identity){
     localAudioTrack=await LivekitClient.createLocalAudioTrack({
       echoCancellation:true,noiseSuppression:true,autoGainControl:true
     });
+    // Publicar siempre muteado — PTT obliga a pulsar para hablar
     await lkRoom.localParticipant.publishTrack(localAudioTrack,{muted:true});
+    // Forzar mute explícito por si LiveKit ignoró el flag inicial
+    await localAudioTrack.mute();
+    // Asegurarse de que el estado PTT esté reseteado
+    pttActive=false;
+    document.querySelectorAll('.ptt-btn,.ptt-big').forEach(b=>{
+      b.classList.remove('active');
+    });
     setIcStatus(true,identity);
     updateParticipants();
   }catch(e){
