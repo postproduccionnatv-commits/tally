@@ -6,226 +6,261 @@
   <meta name="apple-mobile-web-app-capable" content="yes"/>
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
   <meta name="apple-mobile-web-app-title" content="Tally"/>
-  <meta name="theme-color" content="#000000"/>
+  <meta name="theme-color" content="#0A0A0A"/>
   <link rel="manifest" href="/manifest.json"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;400;600;700;900&display=swap" rel="stylesheet"/>
   <title>Tally</title>
   <style>
+    :root{
+      --bg:       #0A0A0A;
+      --surface:  #141414;
+      --surface2: #1C1C1C;
+      --border:   #2A2A2A;
+      --text:     #F0F0F0;
+      --muted:    #4A4A4A;
+      --muted2:   #2A2A2A;
+      --pgm:      #CC0000;
+      --pgm-dim:  #3A0000;
+      --prev:     #007A00;
+      --prev-dim: #003A00;
+      --ptt:      #E55A00;
+      --ptt-glow: rgba(229,90,0,0.25);
+      --green:    #00C853;
+      --radius:   14px;
+      --radius-sm:9px;
+    }
     *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-
     html,body{
-      font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
-      background:#000;color:#fff;
-      width:100%;height:100%;
-      overflow:hidden;user-select:none;
+      font-family:'Inter',system-ui,sans-serif;
+      background:var(--bg);color:var(--text);
+      width:100%;height:100%;overflow:hidden;user-select:none;
+      -webkit-font-smoothing:antialiased;
     }
-
-    /* ─── CONTENEDOR PRINCIPAL ─── */
     #app{
-      position:fixed;inset:0;
-      display:flex;flex-direction:column;
-      padding-top:env(safe-area-inset-top);
-      padding-bottom:env(safe-area-inset-bottom);
-      padding-left:env(safe-area-inset-left);
-      padding-right:env(safe-area-inset-right);
+      position:fixed;inset:0;display:flex;flex-direction:column;
+      padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
     }
-
-    /* Todas las pantallas ocupan todo el espacio disponible */
-    .screen{
-      display:none;flex-direction:column;
-      flex:1;overflow:hidden;
-    }
+    .screen{display:none;flex-direction:column;flex:1;overflow:hidden}
     .screen.active{display:flex}
 
-    /* ─── PERMISOS ─── */
-    #screen-perms{align-items:center;justify-content:center;padding:24px;text-align:center}
-    .perms-title{font-size:clamp(20px,5vw,28px);font-weight:700;margin-bottom:10px}
-    .perms-sub{font-size:clamp(13px,3vw,15px);color:#555;margin-bottom:32px;line-height:1.6;max-width:360px}
-    .perms-items{width:100%;max-width:360px;margin-bottom:20px}
-    .perm-item{padding:14px 16px;border-radius:14px;border:1.5px solid #1a1a1a;background:#111;margin-bottom:10px;display:flex;align-items:center;gap:14px;text-align:left}
-    .perm-icon{font-size:24px;flex-shrink:0}
-    .perm-name{font-size:14px;font-weight:700;margin-bottom:2px}
-    .perm-desc{font-size:12px;color:#555}
-    .perm-check{margin-left:auto;font-size:18px;min-width:22px;text-align:center}
-    .perms-btn{width:100%;max-width:360px;height:52px;border-radius:16px;border:none;background:#fff;color:#000;font-size:16px;font-weight:700;cursor:pointer}
-    .perms-btn:active{background:#ddd}
+    /* ── TIPOGRAFÍA ── */
+    .label{font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--muted)}
+    .mono{font-variant-numeric:tabular-nums}
 
-    /* ─── MENÚ ─── */
-    #screen-menu{align-items:center;justify-content:center;padding:24px;overflow-y:auto}
-    .menu-title{font-size:clamp(22px,5vw,28px);font-weight:700;margin-bottom:6px;text-align:center}
-    .menu-sub{font-size:clamp(13px,3vw,14px);color:#555;margin-bottom:28px;text-align:center}
-    .menu-cards{width:100%;max-width:400px;display:flex;flex-direction:column;gap:12px}
-    /* En horizontal: tarjetas en fila */
-    @media(orientation:landscape){
-      #screen-menu{padding:16px 32px}
-      .menu-cards{flex-direction:row;flex-wrap:wrap;max-width:700px}
-      .menu-btn{flex:1;min-width:180px}
-      .menu-sub{margin-bottom:16px}
+    /* ── PERMISOS ── */
+    #screen-perms{align-items:center;justify-content:center;padding:32px;text-align:center;gap:0}
+    .perms-logo{font-size:11px;font-weight:600;letter-spacing:3px;color:var(--muted);margin-bottom:48px}
+    .perms-title{font-size:clamp(22px,6vw,30px);font-weight:700;margin-bottom:10px;line-height:1.1}
+    .perms-sub{font-size:14px;color:var(--muted);margin-bottom:36px;line-height:1.7;max-width:300px}
+    .perms-list{width:100%;max-width:320px;margin-bottom:24px;display:flex;flex-direction:column;gap:8px}
+    .perm-row{
+      display:flex;align-items:center;gap:14px;
+      padding:14px 16px;border-radius:var(--radius);
+      border:1px solid var(--border);background:var(--surface);
     }
-    .menu-btn{padding:18px 16px;border-radius:16px;border:1.5px solid #222;background:#111;cursor:pointer;text-align:left;transition:background .15s}
-    .menu-btn:active{background:#1a1a1a}
-    .menu-btn-title{font-size:clamp(16px,4vw,19px);font-weight:700;margin-bottom:4px}
-    .menu-btn-desc{font-size:clamp(11px,2.5vw,13px);color:#555;line-height:1.4}
-    .menu-status{font-size:13px;color:#444;margin-top:20px;display:flex;align-items:center;gap:8px}
-    .conn-dot{width:9px;height:9px;border-radius:50%;background:#333;transition:background .3s;flex-shrink:0;display:inline-block}
-    .conn-dot.on{background:#27ae60}
+    .perm-icon{font-size:20px;flex-shrink:0}
+    .perm-name{font-size:13px;font-weight:600;flex:1;text-align:left}
+    .perm-status{font-size:16px;min-width:20px}
+    .btn-primary{
+      width:100%;max-width:320px;height:52px;border-radius:var(--radius);
+      border:none;background:var(--text);color:var(--bg);
+      font-family:inherit;font-size:14px;font-weight:700;letter-spacing:.5px;
+      cursor:pointer;transition:opacity .15s;
+    }
+    .btn-primary:active{opacity:.8}
 
-    /* ─── SELECCIÓN ─── */
-    #screen-select{padding:16px;padding-top:12px}
-    .sel-header{display:flex;align-items:center;gap:10px;margin-bottom:8px;flex-shrink:0}
-    .back-btn-nav{font-size:16px;color:#666;cursor:pointer;padding:4px 8px 4px 0;font-weight:600;white-space:nowrap}
-    .sel-title{font-size:clamp(16px,4vw,20px);font-weight:700;flex:1}
-    .sel-sub{font-size:12px;color:#444;margin-bottom:14px;flex-shrink:0}
+    /* ── MENÚ ── */
+    #screen-menu{justify-content:center;overflow-y:auto}
+    .menu-inner{display:flex;flex-direction:column;align-items:center;padding:32px 24px;gap:0}
+    .menu-wordmark{font-size:11px;font-weight:600;letter-spacing:3px;color:var(--muted);margin-bottom:48px}
+    .menu-title{font-size:clamp(24px,7vw,34px);font-weight:700;text-align:center;line-height:1.1;margin-bottom:8px}
+    .menu-sub{font-size:13px;color:var(--muted);text-align:center;margin-bottom:40px}
+    .menu-cards{width:100%;max-width:360px;display:flex;flex-direction:column;gap:8px;margin-bottom:32px}
+    @media(orientation:landscape){
+      .menu-cards{flex-direction:row;max-width:700px}
+      .menu-card{flex:1}
+    }
+    .menu-card{
+      padding:20px;border-radius:var(--radius);
+      border:1px solid var(--border);background:var(--surface);
+      cursor:pointer;text-align:left;transition:border-color .2s,background .15s;
+    }
+    .menu-card:active{background:var(--surface2)}
+    .menu-card:hover{border-color:#444}
+    .card-eyebrow{font-size:10px;font-weight:600;letter-spacing:2px;color:var(--muted);margin-bottom:8px}
+    .card-title{font-size:16px;font-weight:700;margin-bottom:4px}
+    .card-desc{font-size:12px;color:var(--muted);line-height:1.5}
+    .menu-conn{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted)}
+    .dot{width:6px;height:6px;border-radius:50%;background:var(--muted2);transition:background .3s;flex-shrink:0}
+    .dot.on{background:var(--green)}
+
+    /* ── SELECCIÓN ── */
+    #screen-select{padding:20px 16px 16px}
+    .sel-header{display:flex;align-items:center;gap:12px;margin-bottom:4px;flex-shrink:0}
+    .nav-back{
+      display:flex;align-items:center;gap:6px;
+      font-size:13px;font-weight:600;color:var(--muted);
+      cursor:pointer;padding:4px 0;transition:color .15s;flex-shrink:0;
+    }
+    .nav-back:active{color:var(--text)}
+    .nav-back svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+    .sel-title{font-size:18px;font-weight:700;flex:1}
+    .sel-status{font-size:11px;color:var(--muted);margin-bottom:16px;flex-shrink:0}
     .grid{display:grid;gap:8px;flex:1;overflow-y:auto;align-content:start}
     .grid.g2{grid-template-columns:repeat(2,1fr)}
     .grid.g3{grid-template-columns:repeat(3,1fr)}
-    /* En horizontal más columnas */
     @media(orientation:landscape){
       .grid.g2{grid-template-columns:repeat(3,1fr)}
       .grid.g3{grid-template-columns:repeat(6,1fr)}
     }
-    .cam-btn{border-radius:10px;border:1.5px solid #1a1a1a;background:#111;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;position:relative;padding:10px 6px;transition:border-color .15s,background .15s;min-height:clamp(60px,12vw,90px)}
-    .cam-btn.pgm{background:#CC0000;border-color:#CC0000}
-    .cam-btn.prev{background:#007A00;border-color:#007A00}
-    .cam-name{font-size:clamp(13px,3vw,16px);font-weight:700;text-align:center}
-    .cam-badge{position:absolute;top:5px;right:7px;font-size:9px;font-weight:800;opacity:.9;letter-spacing:1px}
-
-    /* ─── TALLY ─── */
-    #screen-tally{position:relative}
-
-    /* Barra superior de navegación */
-    .tally-nav{
-      display:flex;align-items:center;gap:10px;
-      padding:12px 16px;
-      background:rgba(0,0,0,.35);
-      cursor:pointer;flex-shrink:0;z-index:10;
+    .cam-card{
+      border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--surface);
+      display:flex;flex-direction:column;align-items:center;justify-content:center;
+      cursor:pointer;position:relative;padding:14px 8px;
+      transition:border-color .15s,background .15s;min-height:72px;gap:4px;
     }
-    .tally-nav-arrow{font-size:20px;color:rgba(255,255,255,.7)}
-    .tally-nav-label{font-size:clamp(13px,3vw,15px);color:rgba(255,255,255,.6);font-weight:600}
-    .tally-nav-cam{font-size:clamp(12px,2.5vw,14px);color:rgba(255,255,255,.35);margin-left:auto}
+    .cam-card:active{background:var(--surface2)}
+    .cam-card.pgm{background:var(--pgm);border-color:var(--pgm)}
+    .cam-card.prev{background:var(--prev);border-color:var(--prev)}
+    .cam-num{font-size:11px;font-weight:600;letter-spacing:1.5px;color:var(--muted)}
+    .cam-card.pgm .cam-num,.cam-card.prev .cam-num{color:rgba(255,255,255,.6)}
+    .cam-label{font-size:14px;font-weight:700}
+    .cam-state{
+      position:absolute;top:7px;right:9px;
+      font-size:8px;font-weight:700;letter-spacing:1.5px;opacity:.9;
+    }
 
-    /* Zona central: estado tally */
-    .tally-main{
+    /* ── TALLY ── */
+    #screen-tally{position:relative;transition:background .15s}
+
+    /* Barra top: siempre visible y clara */
+    .tally-topbar{
+      display:flex;align-items:center;gap:10px;
+      padding:14px 16px;flex-shrink:0;
+      background:rgba(0,0,0,.4);backdrop-filter:blur(20px);
+      border-bottom:1px solid rgba(255,255,255,.06);z-index:10;
+    }
+    .tally-topbar .nav-back{color:rgba(255,255,255,.5)}
+    .tally-topbar .nav-back:active{color:#fff}
+    .topbar-cam{font-size:13px;font-weight:600;flex:1;opacity:.7;text-align:center}
+    .topbar-ic{font-size:10px;font-weight:600;letter-spacing:1.5px;color:var(--muted);min-width:52px;text-align:right}
+    .topbar-ic.on{color:var(--green)}
+
+    /* Estado principal: pantalla completa, minimalista */
+    .tally-body{
       flex:1;display:flex;flex-direction:column;
       align-items:center;justify-content:center;
-      padding:8px 16px;min-height:0;
+      min-height:0;padding:16px;
+    }
+    .tally-eyebrow{
+      font-size:10px;font-weight:600;letter-spacing:3px;
+      color:rgba(255,255,255,.3);margin-bottom:12px;
+      text-transform:uppercase;transition:color .15s;
     }
     .tally-state{
-      font-size:clamp(32px,10vw,72px);
-      font-weight:900;letter-spacing:4px;text-align:center;
-      transition:color .12s;line-height:1.1;
-    }
-    .tally-cam{
-      font-size:clamp(14px,3.5vw,20px);font-weight:500;
-      margin-top:8px;opacity:.55;letter-spacing:2px;
+      font-size:clamp(44px,14vw,88px);font-weight:900;
+      letter-spacing:2px;text-align:center;line-height:1;
+      transition:color .15s;
     }
 
-    /* Quién habla — MUY visible */
-    .speakers-row{
-      display:flex;flex-wrap:wrap;justify-content:center;gap:8px;
-      padding:6px 16px;flex-shrink:0;min-height:44px;
+    /* Quién habla: limpio y prominente */
+    .speakers-area{
+      flex-shrink:0;min-height:56px;
+      display:flex;flex-wrap:wrap;justify-content:center;align-items:center;
+      gap:8px;padding:8px 16px;
     }
-    .speaker-chip{
-      background:rgba(230,126,34,.92);color:#fff;
-      font-size:clamp(16px,4vw,22px);font-weight:800;
-      padding:8px 22px;border-radius:30px;
-      letter-spacing:.5px;text-align:center;
-      animation:popIn .2s ease;
+    .speaker-pill{
+      display:flex;align-items:center;gap:8px;
+      background:rgba(229,90,0,.15);
+      border:1px solid rgba(229,90,0,.35);
+      border-radius:100px;padding:8px 18px;
+      font-size:clamp(15px,4vw,19px);font-weight:700;color:#fff;
+      animation:fadeUp .2s ease;
     }
-    @keyframes popIn{from{transform:scale(.8);opacity:0}to{transform:scale(1);opacity:1}}
+    .speaker-pill::before{content:'';width:7px;height:7px;border-radius:50%;background:var(--ptt);flex-shrink:0;animation:blink 1s infinite}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+    @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
 
-    /* Previo — solo modo plató */
-    .tally-footer{
-      padding:10px 16px;flex-shrink:0;text-align:center;
-      border-top:1px solid rgba(255,255,255,.07);
+    /* Previo */
+    .tally-prev{
+      flex-shrink:0;padding:10px 16px 12px;text-align:center;
+      border-top:1px solid rgba(255,255,255,.06);
     }
-    .prev-label{font-size:10px;color:rgba(255,255,255,.3);letter-spacing:2px;text-transform:uppercase;margin-bottom:3px}
-    .prev-cam{font-size:clamp(15px,4vw,19px);font-weight:700;color:#27ae60;min-height:22px}
+    .prev-eyebrow{font-size:9px;font-weight:600;letter-spacing:2px;color:rgba(255,255,255,.25);text-transform:uppercase;margin-bottom:4px}
+    .prev-name{font-size:16px;font-weight:700;color:var(--green);min-height:22px}
 
-    /* ─── BARRA INTERCOM (dentro de tally) ─── */
-    .intercom-bar{
+    /* Intercom bar */
+    .ic-bar{
       flex-shrink:0;padding:10px 14px;
-      padding-bottom:max(10px,env(safe-area-inset-bottom));
-      background:rgba(0,0,0,.55);backdrop-filter:blur(14px);
+      padding-bottom:max(12px,env(safe-area-inset-bottom));
+      background:rgba(0,0,0,.6);backdrop-filter:blur(20px);
+      border-top:1px solid rgba(255,255,255,.06);
       display:flex;align-items:center;gap:10px;
-      border-top:1px solid rgba(255,255,255,.08);
     }
-    /* PTT grande */
     .ptt-btn{
-      flex:1;
-      height:clamp(56px,12vw,72px);
-      border-radius:16px;border:none;
-      background:#1c1c1c;color:#555;
-      font-size:clamp(15px,4vw,20px);font-weight:800;letter-spacing:1px;
-      cursor:pointer;transition:background .1s,color .1s,box-shadow .1s;
+      flex:1;height:clamp(52px,12vw,68px);
+      border-radius:var(--radius);border:1px solid var(--border);
+      background:var(--surface);color:var(--muted);
+      font-family:inherit;font-size:clamp(13px,3.5vw,16px);
+      font-weight:700;letter-spacing:1px;cursor:pointer;
       display:flex;align-items:center;justify-content:center;gap:8px;
-      -webkit-user-select:none;touch-action:none;
+      transition:all .1s;-webkit-user-select:none;touch-action:none;
     }
-    .ptt-btn.active{background:#e67e22;color:#fff;box-shadow:0 0 0 4px rgba(230,126,34,.35)}
-    .ptt-btn.locked{background:#27ae60;color:#fff}
-    .ic-badge{font-size:11px;color:#333;text-align:right;min-width:48px;line-height:1.5;flex-shrink:0}
-    .ic-badge.on{color:#27ae60}
+    .ptt-btn .ptt-dot{width:8px;height:8px;border-radius:50%;background:var(--muted2);transition:background .1s;flex-shrink:0}
+    .ptt-btn.active{background:var(--ptt);border-color:var(--ptt);color:#fff;box-shadow:0 0 24px var(--ptt-glow)}
+    .ptt-btn.active .ptt-dot{background:#fff}
 
-    /* ─── INTERCOM STANDALONE ─── */
+    /* ── INTERCOM STANDALONE ── */
     #screen-intercom{padding:0}
-    .ic-nav{display:flex;align-items:center;gap:10px;padding:14px 16px;flex-shrink:0;cursor:pointer}
-    .ic-title{font-size:clamp(17px,4vw,20px);font-weight:700;flex:1}
-    .ic-room-badge{font-size:12px;color:#444;padding:0 16px 12px;flex-shrink:0}
-    .participants-list{flex:1;overflow-y:auto;padding:0 16px}
-    /* En horizontal: 2 columnas */
+    .ic-topbar{display:flex;align-items:center;padding:16px;gap:10px;flex-shrink:0;border-bottom:1px solid var(--border)}
+    .ic-topbar-title{font-size:16px;font-weight:700;flex:1}
+    .ic-badge{font-size:10px;font-weight:600;letter-spacing:1.5px;color:var(--muted)}
+    .ic-badge.on{color:var(--green)}
+    .participants{flex:1;overflow-y:auto;padding:8px 16px}
     @media(orientation:landscape){
-      .participants-list{display:grid;grid-template-columns:1fr 1fr;align-content:start;gap:0 16px}
+      .participants{display:grid;grid-template-columns:1fr 1fr;gap:0 16px;align-content:start}
     }
-    .participant-row{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid #111}
+    .p-row{
+      display:flex;align-items:center;gap:14px;
+      padding:14px 0;border-bottom:1px solid var(--border);
+    }
     .p-avatar{
-      width:clamp(36px,8vw,46px);height:clamp(36px,8vw,46px);
-      border-radius:50%;background:#1a1a1a;
+      width:40px;height:40px;border-radius:50%;
+      background:var(--surface2);border:1px solid var(--border);
       display:flex;align-items:center;justify-content:center;
-      font-size:clamp(14px,3vw,18px);font-weight:800;color:#555;
-      flex-shrink:0;transition:background .2s;
+      font-size:15px;font-weight:700;color:var(--muted);flex-shrink:0;
+      transition:background .2s,border-color .2s,color .2s;
     }
-    .p-avatar.speaking{background:#e67e22;color:#fff}
-    .p-name{font-size:clamp(14px,3.5vw,17px);font-weight:700;flex:1}
-    .p-speaking{font-size:12px;color:#e67e22;font-weight:600}
-    .p-idle{font-size:12px;color:#333}
+    .p-avatar.speaking{background:var(--ptt);border-color:var(--ptt);color:#fff}
+    .p-info{flex:1;min-width:0}
+    .p-name{font-size:15px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .p-state{font-size:11px;color:var(--muted);margin-top:2px;font-weight:500}
+    .p-state.speaking{color:var(--ptt)}
 
-    /* PTT grande standalone */
-    .ptt-big-wrap{flex-shrink:0;padding:12px 16px;padding-bottom:max(16px,env(safe-area-inset-bottom))}
+    .ptt-wrap{flex-shrink:0;padding:12px 16px;padding-bottom:max(16px,env(safe-area-inset-bottom))}
     .ptt-big{
       width:100%;height:clamp(72px,18vw,96px);
-      border-radius:20px;border:none;
-      background:#1c1c1c;color:#555;
-      font-size:clamp(18px,5vw,24px);font-weight:800;letter-spacing:2px;
-      cursor:pointer;transition:background .1s,color .1s,box-shadow .1s;
-      -webkit-user-select:none;touch-action:none;
+      border-radius:var(--radius);border:1px solid var(--border);
+      background:var(--surface);color:var(--muted);
+      font-family:inherit;font-size:clamp(16px,5vw,22px);
+      font-weight:700;letter-spacing:1.5px;cursor:pointer;
       display:flex;align-items:center;justify-content:center;gap:10px;
+      transition:all .1s;-webkit-user-select:none;touch-action:none;
     }
-    .ptt-big.active{background:#e67e22;color:#fff;box-shadow:0 0 0 5px rgba(230,126,34,.3)}
-    .ptt-big.locked{background:#27ae60;color:#fff;box-shadow:0 0 0 5px rgba(39,174,96,.3)}
+    .ptt-big .ptt-dot{width:9px;height:9px;border-radius:50%;background:var(--muted2);transition:background .1s;flex-shrink:0}
+    .ptt-big.active{background:var(--ptt);border-color:var(--ptt);color:#fff;box-shadow:0 0 32px var(--ptt-glow)}
+    .ptt-big.active .ptt-dot{background:#fff;animation:blink 1s infinite}
+    .headset-note{font-size:11px;color:var(--muted);text-align:center;margin-top:8px;letter-spacing:.3px}
+    .headset-note.on{color:var(--ptt)}
 
-    /* Indicador auriculares */
-    .headset-hint{
-      font-size:11px;color:#333;text-align:center;
-      margin-top:6px;letter-spacing:.5px;
-    }
-    .headset-hint.active{color:#27ae60}
-
-    /* Orientación: en landscape la barra intercom va a la derecha */
+    /* Landscape tally */
     @media(orientation:landscape){
       #screen-tally{flex-direction:row}
-      .tally-left{flex:1;display:flex;flex-direction:column}
-      .intercom-bar{
-        flex-direction:column;width:180px;
-        border-top:none;border-left:1px solid rgba(255,255,255,.08);
-        justify-content:center;
-        padding:16px 12px;
-        padding-bottom:max(16px,env(safe-area-inset-bottom));
-      }
-      .ptt-btn{
-        width:100%;height:100px;
-        flex-direction:column;gap:6px;
-        writing-mode:horizontal-tb;
-      }
-      .ic-badge{text-align:center;min-width:unset}
+      .tally-left{flex:1;display:flex;flex-direction:column;min-width:0}
+      .ic-bar{flex-direction:column;width:160px;border-top:none;border-left:1px solid rgba(255,255,255,.06);padding:16px 12px;padding-bottom:max(16px,env(safe-area-inset-bottom));justify-content:center;gap:12px}
+      .ptt-btn{width:100%;height:80px;flex-direction:column;font-size:13px;gap:6px}
     }
   </style>
 </head>
@@ -234,50 +269,49 @@
 
 <!-- PERMISOS -->
 <div id="screen-perms" class="screen active">
-  <div class="perms-title">Bienvenido a Tally</div>
-  <div class="perms-sub">Necesitamos acceso al micrófono y la cámara para el intercom y el flash de aviso</div>
-  <div class="perms-items">
-    <div class="perm-item">
-      <div class="perm-icon">🎙</div>
-      <div>
-        <div class="perm-name">Micrófono</div>
-        <div class="perm-desc">Para el intercom con el equipo</div>
-      </div>
-      <div class="perm-check" id="perm-mic-check">—</div>
+  <div class="perms-logo">TALLY REMOTE</div>
+  <div class="perms-title">Acceso necesario</div>
+  <div class="perms-sub">Para el intercom y el flash de aviso necesitamos estos permisos</div>
+  <div class="perms-list">
+    <div class="perm-row">
+      <span class="perm-icon">🎙</span>
+      <span class="perm-name">Micrófono — Intercom</span>
+      <span class="perm-status" id="perm-mic">—</span>
     </div>
-    <div class="perm-item">
-      <div class="perm-icon">📷</div>
-      <div>
-        <div class="perm-name">Cámara (flash)</div>
-        <div class="perm-desc">Para encender la luz de aviso</div>
-      </div>
-      <div class="perm-check" id="perm-cam-check">—</div>
+    <div class="perm-row">
+      <span class="perm-icon">📷</span>
+      <span class="perm-name">Cámara — Flash de aviso</span>
+      <span class="perm-status" id="perm-cam">—</span>
     </div>
   </div>
-  <button class="perms-btn" id="perms-btn" onclick="requestPerms()">Conceder permisos</button>
+  <button class="btn-primary" id="perms-btn" onclick="requestPerms()">Conceder acceso</button>
 </div>
 
 <!-- MENÚ -->
 <div id="screen-menu" class="screen">
-  <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;overflow-y:auto;padding:24px">
-    <div class="menu-title">Tally Remote</div>
-    <div class="menu-sub">Selecciona tu modo de trabajo</div>
+  <div class="menu-inner">
+    <div class="menu-wordmark">TALLY REMOTE</div>
+    <div class="menu-title">¿En qué modo<br>trabajas hoy?</div>
+    <div class="menu-sub">Selecciona tu rol para esta producción</div>
     <div class="menu-cards">
-      <div class="menu-btn" onclick="enterMode('plato')">
-        <div class="menu-btn-title">📺 &nbsp;Plató</div>
-        <div class="menu-btn-desc">Hasta 6 cámaras · Flash en antena · Previo visible · Intercom</div>
+      <div class="menu-card" onclick="enterMode('plato')">
+        <div class="card-eyebrow">MODO 01</div>
+        <div class="card-title">Plató</div>
+        <div class="card-desc">Hasta 6 cámaras · Flash en antena · Previo visible · Intercom</div>
       </div>
-      <div class="menu-btn" onclick="enterMode('eng')">
-        <div class="menu-btn-title">🎥 &nbsp;ENG Directo</div>
-        <div class="menu-btn-desc">Hasta 24 entradas · Flash en directo · Intercom</div>
+      <div class="menu-card" onclick="enterMode('eng')">
+        <div class="card-eyebrow">MODO 02</div>
+        <div class="card-title">ENG Directo</div>
+        <div class="card-desc">Hasta 24 entradas · Flash en directo · Intercom</div>
       </div>
-      <div class="menu-btn" onclick="enterIntercomAlone()">
-        <div class="menu-btn-title">🎙️ &nbsp;Solo Intercom</div>
-        <div class="menu-btn-desc">Realización, técnicos o personal sin tally</div>
+      <div class="menu-card" onclick="enterIntercomAlone()">
+        <div class="card-eyebrow">MODO 03</div>
+        <div class="card-title">Solo Intercom</div>
+        <div class="card-desc">Realización, sonido o dirección sin tally</div>
       </div>
     </div>
-    <div class="menu-status">
-      <span class="conn-dot" id="menu-dot"></span>
+    <div class="menu-conn">
+      <span class="dot" id="menu-dot"></span>
       <span id="menu-conn">Conectando...</span>
     </div>
   </div>
@@ -286,251 +320,222 @@
 <!-- SELECCIÓN -->
 <div id="screen-select" class="screen">
   <div class="sel-header">
-    <span class="back-btn-nav" onclick="goMenu()">← Menú</span>
-    <span class="sel-title" id="sel-title">Selecciona tu cámara</span>
+    <div class="nav-back" onclick="goMenu()">
+      <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+      Menú
+    </div>
+    <div class="sel-title" id="sel-title">Cámara</div>
   </div>
-  <div class="sel-sub" id="sel-sub"></div>
+  <div class="sel-status" id="sel-status"></div>
   <div class="grid" id="cam-grid"></div>
 </div>
 
 <!-- TALLY -->
 <div id="screen-tally" class="screen">
-  <!-- En portrait: columna. En landscape: fila con .tally-left y .intercom-bar -->
   <div class="tally-left" style="display:contents">
-    <div class="tally-nav" onclick="goSelect()">
-      <span class="tally-nav-arrow">←</span>
-      <span class="tally-nav-label">Cambiar cámara</span>
-      <span class="tally-nav-cam" id="tally-nav-cam"></span>
+    <div class="tally-topbar">
+      <div class="nav-back" onclick="goSelect()">
+        <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+      </div>
+      <div class="topbar-cam" id="topbar-cam"></div>
+      <div class="topbar-ic" id="topbar-ic">IC —</div>
     </div>
-    <div class="tally-main">
+    <div class="tally-body">
+      <div class="tally-eyebrow" id="tally-eyebrow">ESTADO</div>
       <div class="tally-state" id="tally-state">LIBRE</div>
-      <div class="tally-cam"   id="tally-cam"></div>
     </div>
-    <div class="speakers-row" id="speakers-row"></div>
-    <div class="tally-footer" id="tally-footer" style="display:none">
-      <div class="prev-label">En previo</div>
-      <div class="prev-cam" id="prev-cam">—</div>
+    <div class="speakers-area" id="speakers-area"></div>
+    <div class="tally-prev" id="tally-prev" style="display:none">
+      <div class="prev-eyebrow">En previo</div>
+      <div class="prev-name" id="prev-name">—</div>
     </div>
   </div>
-  <div class="intercom-bar">
+  <div class="ic-bar">
     <button class="ptt-btn" id="ptt-tally"
       ontouchstart="pttPress(event)" ontouchend="pttRelease(event)"
       onmousedown="pttPress(event)" onmouseup="pttRelease(event)" onmouseleave="pttRelease(event)">
-      🎙 &nbsp;HABLAR
+      <span class="ptt-dot"></span>HABLAR
     </button>
-    <div class="ic-badge" id="ic-badge-tally">—</div>
+    <div class="topbar-ic" id="ic-badge" style="min-width:44px;text-align:center">—</div>
   </div>
 </div>
 
 <!-- INTERCOM STANDALONE -->
 <div id="screen-intercom" class="screen">
-  <div class="ic-nav" onclick="goMenu()">
-    <span class="tally-nav-arrow">←</span>
-    <span class="ic-title">🎙️ Intercom</span>
+  <div class="ic-topbar">
+    <div class="nav-back" onclick="goMenu()">
+      <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+    </div>
+    <div class="ic-topbar-title">Intercom</div>
+    <div class="ic-badge" id="ic-room-badge">—</div>
   </div>
-  <div class="ic-room-badge" id="ic-room-badge">Conectando...</div>
-  <div class="participants-list" id="participants-list"></div>
-  <div class="ptt-big-wrap">
+  <div class="participants" id="participants"></div>
+  <div class="ptt-wrap">
     <button class="ptt-big" id="ptt-big"
       ontouchstart="pttPress(event)" ontouchend="pttRelease(event)"
       onmousedown="pttPress(event)" onmouseup="pttRelease(event)" onmouseleave="pttRelease(event)">
-      🎙 &nbsp;MANTÉN PARA HABLAR
+      <span class="ptt-dot"></span>MANTÉN PARA HABLAR
     </button>
-    <div class="headset-hint" id="headset-hint">Auriculares: botón central para hablar</div>
+    <div class="headset-note" id="headset-note">Auriculares: botón central para hablar</div>
   </div>
 </div>
 
-</div><!-- /app -->
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/livekit-client@2.5.6/dist/livekit-client.umd.min.js"></script>
 <script src="https://cdn.socket.io/4.7.4/socket.io.min.js"></script>
 <script>
-// ═══ CONFIG ═══════════════════════════════════════════════════
-const CAMERAS_PLATO = Array.from({length:6},  (_,i)=>({label:`Cámara ${i+1}`,input:`input${i+1}`}));
-const CAMERAS_ENG   = Array.from({length:24}, (_,i)=>({label:`CAM ${i+1}`,   input:`input${i+1}`}));
+const CAMS_PLATO = Array.from({length:6},  (_,i)=>({n:i+1, label:`Cámara ${i+1}`, input:`input${i+1}`}));
+const CAMS_ENG   = Array.from({length:24}, (_,i)=>({n:i+1, label:`CAM ${i+1}`,    input:`input${i+1}`}));
 const STATES = {
-  pgm:     {bg:'#CC0000',label:'EN ANTENA',text:'#fff'},
-  prev:    {bg:'#007A00',label:'EN PREVIO',text:'#fff'},
-  inactive:{bg:'#111111',label:'LIBRE',    text:'#2a2a2a'},
-  offline: {bg:'#0a0a0a',label:'SIN SEÑAL',text:'#1a1a1a'},
+  pgm:     {bg:'#CC0000',st:'EN ANTENA',ey:'PROGRAMA',  tc:'#fff'},
+  prev:    {bg:'#007A00',st:'EN PREVIO', ey:'PREVIO',    tc:'#fff'},
+  inactive:{bg:'#0A0A0A',st:'LIBRE',    ey:'ESTADO',    tc:'#2A2A2A'},
+  offline: {bg:'#0A0A0A',st:'SIN SEÑAL',ey:'DESCONECTADO',tc:'#1A1A1A'},
 };
 
-// ═══ ESTADO ═══════════════════════════════════════════════════
-let mode=null, cameras=[], selectedCam=null;
-let tallyInputs={}, bridgeOn=false, prevTallyKey=null;
-let torchTrack=null, torchActive=false;
-let lkRoom=null, localAudioTrack=null, myIdentity=null;
-let activeSpeakers=new Set();
-let pttActive=false;
-// PTT con auriculares: toggle (press=hablar, release=silencio)
-let headsetPttOn=false;
-let audioContext=null;
+let mode=null,cameras=[],selectedCam=null;
+let tallyInputs={},bridgeOn=false,prevKey=null;
+let torchTrack=null,torchOn=false;
+let lkRoom=null,localTrack=null,myId=null;
+let activeSpeakers=new Set(),pttActive=false,headsetOn=false;
 
-// ═══ ORIENTACIÓN: reajustar layout tally ══════════════════════
-function applyOrientation(){
-  const tally=document.getElementById('screen-tally');
-  const left=tally.querySelector('.tally-left');
+// ── ORIENTACIÓN ──
+function fixOrientation(){
+  const t=document.getElementById('screen-tally');
+  const left=t.querySelector('.tally-left');
   if(!left)return;
   if(window.innerWidth>window.innerHeight){
-    // Landscape
-    tally.style.flexDirection='row';
-    left.style.display='flex';
-    left.style.flexDirection='column';
-    left.style.flex='1';
-    left.style.minWidth='0';
-  } else {
-    // Portrait
-    tally.style.flexDirection='column';
-    left.style.display='contents';
+    t.style.flexDirection='row';
+    left.style.cssText='display:flex;flex-direction:column;flex:1;min-width:0';
+  }else{
+    t.style.flexDirection='';
+    left.style.cssText='display:contents';
   }
 }
-window.addEventListener('resize', applyOrientation);
-window.addEventListener('orientationchange', ()=>setTimeout(applyOrientation,100));
+window.addEventListener('resize',fixOrientation);
+window.addEventListener('orientationchange',()=>setTimeout(fixOrientation,100));
 
-// ═══ PERMISOS ══════════════════════════════════════════════════
+// ── PERMISOS ──
 async function requestPerms(){
   const btn=document.getElementById('perms-btn');
-  btn.textContent='Solicitando...'; btn.disabled=true;
-
-  // Micrófono
+  btn.textContent='Solicitando acceso...';btn.disabled=true;
   try{
     const s=await navigator.mediaDevices.getUserMedia({audio:true});
     s.getTracks().forEach(t=>t.stop());
-    document.getElementById('perm-mic-check').textContent='✅';
-  }catch(e){
-    document.getElementById('perm-mic-check').textContent='❌';
-  }
-
-  // Cámara para flash
+    document.getElementById('perm-mic').textContent='✓';
+  }catch(e){document.getElementById('perm-mic').textContent='✕';}
   try{
     const s=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}});
     torchTrack=s.getVideoTracks()[0];
-    document.getElementById('perm-cam-check').textContent='✅';
-  }catch(e){
-    document.getElementById('perm-cam-check').textContent='❌';
-  }
-
+    document.getElementById('perm-cam').textContent='✓';
+  }catch(e){document.getElementById('perm-cam').textContent='✕';}
   localStorage.setItem('permsGranted','1');
-  setTimeout(()=>show('screen-menu'),600);
+  setTimeout(()=>show('screen-menu'),500);
 }
 
-// ═══ TORCH ═════════════════════════════════════════════════════
+// ── TORCH ──
 async function setTorch(on){
-  if(torchActive===on)return;
+  if(torchOn===on)return;
   if(!torchTrack||torchTrack.readyState==='ended'){
-    try{
-      const s=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}});
-      torchTrack=s.getVideoTracks()[0];
-    }catch(e){return;}
+    try{const s=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}});torchTrack=s.getVideoTracks()[0];}catch(e){return;}
   }
-  try{await torchTrack.applyConstraints({advanced:[{torch:on}]});torchActive=on;}catch(e){}
+  try{await torchTrack.applyConstraints({advanced:[{torch:on}]});torchOn=on;}catch(e){}
 }
 
-// ═══ NAVEGACIÓN ════════════════════════════════════════════════
+// ── NAV ──
 function show(id){
-  document.querySelectorAll('.screen').forEach(s=>{
-    s.classList.toggle('active', s.id===id);
-  });
-  if(id==='screen-tally') setTimeout(applyOrientation,50);
+  document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('active',s.id===id));
+  if(id==='screen-tally')setTimeout(fixOrientation,50);
 }
 function goMenu(){setTorch(false);leaveRoom();selectedCam=null;mode=null;show('screen-menu');}
 function goSelect(){setTorch(false);selectedCam=null;buildGrid();show('screen-select');}
-
 function enterMode(m){
-  mode=m; cameras=m==='plato'?CAMERAS_PLATO:CAMERAS_ENG;
-  document.getElementById('sel-title').textContent=m==='plato'?'Selecciona tu cámara':'Selecciona tu entrada';
-  document.getElementById('tally-footer').style.display=m==='plato'?'block':'none';
-  buildGrid(); show('screen-select');
+  mode=m;cameras=m==='plato'?CAMS_PLATO:CAMS_ENG;
+  document.getElementById('sel-title').textContent=m==='plato'?'Cámara':'Entrada';
+  document.getElementById('tally-prev').style.display=m==='plato'?'block':'none';
+  buildGrid();show('screen-select');
   localStorage.setItem('tallyMode',m);
 }
-
 function enterIntercomAlone(){
-  const name=prompt('¿Cómo te identificas?\n(ej: Realización, Sonido, Dirección...)');
-  if(!name)return;
-  myIdentity=name.trim();
-  show('screen-intercom');
-  joinIntercom(myIdentity);
+  const n=prompt('Tu nombre o rol (ej: Realización, Sonido...)');
+  if(!n)return;
+  myId=n.trim();show('screen-intercom');joinIntercom(myId);
 }
 
-// ═══ GRID ══════════════════════════════════════════════════════
+// ── GRID ──
 function buildGrid(){
   const grid=document.getElementById('cam-grid');
   grid.className='grid '+(mode==='eng'?'g3':'g2');
   grid.innerHTML='';
-  const sub=document.getElementById('sel-sub');
-  sub.textContent=bridgeOn?'● Estudio conectado':'● Estudio desconectado';
-  sub.style.color=bridgeOn?'#27ae60':'#555';
+  const st=document.getElementById('sel-status');
+  st.textContent=bridgeOn?'● Estudio conectado':'● Estudio desconectado';
+  st.style.color=bridgeOn?'#00C853':'#4A4A4A';
   cameras.forEach(cam=>{
     const state=tallyInputs[cam.input]||'inactive';
-    const btn=document.createElement('div');
-    btn.className='cam-btn '+(state==='pgm'?'pgm':state==='prev'?'prev':'');
-    btn.id='btn-'+cam.input;
-    btn.innerHTML=`<span class="cam-name">${cam.label}</span><span class="cam-badge" id="badge-${cam.input}">${state==='pgm'?'PGM':state==='prev'?'PRV':''}</span>`;
-    btn.addEventListener('click',()=>selectCam(cam));
-    grid.appendChild(btn);
+    const el=document.createElement('div');
+    el.className='cam-card '+(state==='pgm'?'pgm':state==='prev'?'prev':'');
+    el.id='cc-'+cam.input;
+    el.innerHTML=`<span class="cam-num">CAM</span><span class="cam-label">${cam.n}</span><span class="cam-state" id="cs-${cam.input}">${state==='pgm'?'PGM':state==='prev'?'PRV':''}</span>`;
+    el.addEventListener('click',()=>selectCam(cam));
+    grid.appendChild(el);
   });
 }
 function updateGrid(){
   cameras.forEach(cam=>{
-    const btn=document.getElementById('btn-'+cam.input);
-    const badge=document.getElementById('badge-'+cam.input);
-    if(!btn)return;
+    const el=document.getElementById('cc-'+cam.input);
+    const cs=document.getElementById('cs-'+cam.input);
+    if(!el)return;
     const state=tallyInputs[cam.input]||'inactive';
-    btn.className='cam-btn '+(state==='pgm'?'pgm':state==='prev'?'prev':'');
-    badge.textContent=state==='pgm'?'PGM':state==='prev'?'PRV':'';
+    el.className='cam-card '+(state==='pgm'?'pgm':state==='prev'?'prev':'');
+    cs.textContent=state==='pgm'?'PGM':state==='prev'?'PRV':'';
   });
 }
 
-// ═══ SELECCIONAR CÁMARA ════════════════════════════════════════
+// ── SELECCIONAR ──
 async function selectCam(cam){
-  selectedCam=cam; myIdentity=cam.label;
+  selectedCam=cam;myId=cam.label;
   localStorage.setItem('selectedCam',cam.input);
-  document.getElementById('tally-cam').textContent=cam.label;
-  document.getElementById('tally-nav-cam').textContent=cam.label;
-  show('screen-tally');
-  updateTallyScreen();
+  document.getElementById('topbar-cam').textContent=cam.label;
+  show('screen-tally');updateTally();
   try{if('wakeLock'in navigator)await navigator.wakeLock.request('screen');}catch(e){}
   joinIntercom(cam.label);
   setupMediaSession();
 }
 
-// ═══ TALLY SCREEN ══════════════════════════════════════════════
-function updateTallyScreen(){
+// ── TALLY ──
+function updateTally(){
   if(!selectedCam)return;
   const key=!bridgeOn?'offline':(tallyInputs[selectedCam.input]||'inactive');
   const s=STATES[key];
   document.getElementById('screen-tally').style.background=s.bg;
-  document.getElementById('tally-state').style.color=s.text;
-  document.getElementById('tally-state').textContent=s.label;
+  document.getElementById('tally-state').style.color=s.tc;
+  document.getElementById('tally-state').textContent=s.st;
+  document.getElementById('tally-eyebrow').style.color=key==='pgm'?'rgba(255,255,255,.4)':key==='prev'?'rgba(255,255,255,.4)':'#2A2A2A';
+  document.getElementById('tally-eyebrow').textContent=s.ey;
   setTorch(key==='pgm');
-  if(key==='pgm'&&prevTallyKey!=='pgm') navigator.vibrate&&navigator.vibrate([100,50,100]);
-  prevTallyKey=key;
+  if(key==='pgm'&&prevKey!=='pgm')navigator.vibrate&&navigator.vibrate([80,40,80]);
+  prevKey=key;
   if(mode==='plato'){
-    const pc=CAMERAS_PLATO.find(c=>(tallyInputs[c.input]||'inactive')==='prev');
-    document.getElementById('prev-cam').textContent=pc?pc.label:'—';
+    const pc=CAMS_PLATO.find(c=>(tallyInputs[c.input]||'inactive')==='prev');
+    document.getElementById('prev-name').textContent=pc?pc.label:'—';
   }
 }
 
-// ═══ SPEAKERS ══════════════════════════════════════════════════
-function updateSpeakersRow(){
-  const row=document.getElementById('speakers-row');
-  if(!row)return;
-  row.innerHTML='';
-  // Mostrar todos los que hablan menos yo mismo
-  const others=[...activeSpeakers].filter(id=>id!==myIdentity);
-  if(others.length===0){
-    // Si nadie habla, mostrar nada (espacio limpio)
-    return;
-  }
-  others.forEach(id=>{
-    const chip=document.createElement('div');
-    chip.className='speaker-chip';
-    chip.textContent='🎙 '+id;
-    row.appendChild(chip);
+// ── SPEAKERS ──
+function updateSpeakers(){
+  const area=document.getElementById('speakers-area');
+  if(!area)return;
+  area.innerHTML='';
+  [...activeSpeakers].filter(id=>id!==myId).forEach(id=>{
+    const pill=document.createElement('div');
+    pill.className='speaker-pill';
+    pill.textContent=id;
+    area.appendChild(pill);
   });
 }
 
-// ═══ LIVEKIT ═══════════════════════════════════════════════════
+// ── LIVEKIT ──
 async function joinIntercom(identity){
   if(lkRoom)await leaveRoom();
   try{
@@ -542,190 +547,114 @@ async function joinIntercom(identity){
     });
     lkRoom.on(LivekitClient.RoomEvent.ParticipantConnected,    updateParticipants);
     lkRoom.on(LivekitClient.RoomEvent.ParticipantDisconnected, updateParticipants);
-    lkRoom.on(LivekitClient.RoomEvent.TrackSubscribed,         onTrackSubscribed);
-    lkRoom.on(LivekitClient.RoomEvent.TrackUnsubscribed,       onTrackUnsubscribed);
-    lkRoom.on(LivekitClient.RoomEvent.ActiveSpeakersChanged,   onSpeakersChanged);
+    lkRoom.on(LivekitClient.RoomEvent.TrackSubscribed,         t=>{if(t.kind===LivekitClient.Track.Kind.Audio){const e=t.attach();e.id='aud-'+t.sid;document.body.appendChild(e);}});
+    lkRoom.on(LivekitClient.RoomEvent.TrackUnsubscribed,       t=>{const e=document.getElementById('aud-'+t.sid);if(e)e.remove();});
+    lkRoom.on(LivekitClient.RoomEvent.ActiveSpeakersChanged,   spk=>{activeSpeakers=new Set(spk.map(s=>s.identity));updateSpeakers();updateParticipants();});
     lkRoom.on(LivekitClient.RoomEvent.Disconnected,            ()=>setIcStatus(false));
-
     await lkRoom.connect(data.url,data.token);
-    localAudioTrack=await LivekitClient.createLocalAudioTrack({
-      echoCancellation:true,noiseSuppression:true,autoGainControl:true
-    });
-    // Publicar siempre muteado — PTT obliga a pulsar para hablar
-    await lkRoom.localParticipant.publishTrack(localAudioTrack,{muted:true});
-    // Forzar mute explícito por si LiveKit ignoró el flag inicial
-    await localAudioTrack.mute();
-    // Asegurarse de que el estado PTT esté reseteado
+    localTrack=await LivekitClient.createLocalAudioTrack({echoCancellation:true,noiseSuppression:true,autoGainControl:true});
+    await lkRoom.localParticipant.publishTrack(localTrack,{muted:true});
+    await localTrack.mute();
     pttActive=false;
-    document.querySelectorAll('.ptt-btn,.ptt-big').forEach(b=>{
-      b.classList.remove('active');
-    });
     setIcStatus(true,identity);
     updateParticipants();
-  }catch(e){
-    console.error('LiveKit:',e);
-    setIcStatus(false);
-  }
+  }catch(e){console.error('LK:',e);setIcStatus(false);}
 }
-
 async function leaveRoom(){
   if(lkRoom){await lkRoom.disconnect();lkRoom=null;}
-  if(localAudioTrack){localAudioTrack.stop();localAudioTrack=null;}
+  if(localTrack){localTrack.stop();localTrack=null;}
   setIcStatus(false);
 }
-
 function setIcStatus(on,identity){
-  const b=document.getElementById('ic-badge-tally');
-  if(b){b.className='ic-badge '+(on?'on':'');b.textContent=on?'● IC\nactivo':'● IC\noffline';}
+  const b=document.getElementById('ic-badge');
+  const t=document.getElementById('topbar-ic');
   const rb=document.getElementById('ic-room-badge');
-  if(rb)rb.textContent=on?`✅ Sala intercom · ${identity}`:'Conectando...';
-}
-
-function onTrackSubscribed(track){
-  if(track.kind===LivekitClient.Track.Kind.Audio){
-    const el=track.attach();el.id='audio-'+track.sid;document.body.appendChild(el);
-  }
-}
-function onTrackUnsubscribed(track){
-  const el=document.getElementById('audio-'+track.sid);if(el)el.remove();
-}
-function onSpeakersChanged(speakers){
-  activeSpeakers=new Set(speakers.map(s=>s.identity));
-  updateSpeakersRow();
-  updateParticipants();
+  if(b){b.className=(on?'topbar-ic on':'topbar-ic');b.textContent=on?'IC ●':'IC —';}
+  if(t){t.className=(on?'topbar-ic on':'topbar-ic');t.textContent=on?'IC ●':'IC —';}
+  if(rb){rb.className=(on?'ic-badge on':'ic-badge');rb.textContent=on?`● ${identity}`:'Desconectado';}
 }
 function updateParticipants(){
-  const list=document.getElementById('participants-list');
+  const list=document.getElementById('participants');
   if(!list||!lkRoom)return;
   list.innerHTML='';
-  const all=[lkRoom.localParticipant,...lkRoom.remoteParticipants.values()];
-  all.forEach(p=>{
-    const speaking=activeSpeakers.has(p.identity);
+  [lkRoom.localParticipant,...lkRoom.remoteParticipants.values()].forEach(p=>{
+    const spk=activeSpeakers.has(p.identity);
     const row=document.createElement('div');
-    row.className='participant-row';
-    row.innerHTML=`
-      <div class="p-avatar ${speaking?'speaking':''}">${p.identity.charAt(0).toUpperCase()}</div>
-      <div style="flex:1;min-width:0">
-        <div class="p-name">${p.identity}${p.isLocal?' (tú)':''}</div>
-        <div class="${speaking?'p-speaking':'p-idle'}">${speaking?'🎙 Hablando...':'En escucha'}</div>
-      </div>`;
+    row.className='p-row';
+    row.innerHTML=`<div class="p-avatar ${spk?'speaking':''}">${p.identity[0].toUpperCase()}</div><div class="p-info"><div class="p-name">${p.identity}${p.isLocal?' (tú)':''}</div><div class="p-state ${spk?'speaking':''}">${spk?'Hablando':'En escucha'}</div></div>`;
     list.appendChild(row);
   });
 }
 
-// ═══ PTT ═══════════════════════════════════════════════════════
+// ── PTT ──
 async function pttPress(e){
-  if(e)e.preventDefault();
+  e&&e.preventDefault();
   if(pttActive)return;
   pttActive=true;
-  if(localAudioTrack)await localAudioTrack.unmute();
+  if(localTrack)await localTrack.unmute();
   document.querySelectorAll('.ptt-btn,.ptt-big').forEach(b=>{
     b.classList.add('active');
-    b.textContent=b.classList.contains('ptt-big')?'🎙 HABLANDO...':'🎙 HABLANDO...';
+    const txt=b.querySelector('span+span')||b;
+    if(b.classList.contains('ptt-big'))b.childNodes[b.childNodes.length-1].textContent=' HABLANDO...';
+    else b.childNodes[b.childNodes.length-1].textContent='HABLANDO...';
   });
 }
 async function pttRelease(e){
-  if(e)e.preventDefault();
+  e&&e.preventDefault();
   if(!pttActive)return;
   pttActive=false;
-  if(localAudioTrack)await localAudioTrack.mute();
+  if(localTrack)await localTrack.mute();
   document.querySelectorAll('.ptt-btn,.ptt-big').forEach(b=>{
     b.classList.remove('active');
-    b.textContent=b.classList.contains('ptt-big')?'🎙 MANTÉN PARA HABLAR':'🎙 HABLAR';
+    if(b.classList.contains('ptt-big'))b.childNodes[b.childNodes.length-1].textContent=' MANTÉN PARA HABLAR';
+    else b.childNodes[b.childNodes.length-1].textContent='HABLAR';
   });
 }
-
-// Teclado: barra espaciadora
 document.addEventListener('keydown',e=>{if(e.code==='Space'&&!pttActive){e.preventDefault();pttPress();}});
 document.addEventListener('keyup',  e=>{if(e.code==='Space'){e.preventDefault();pttRelease();}});
 
-// ═══ MEDIA SESSION API (botón auriculares) ══════════════════════
-// El botón central de los auriculares iOS/Android dispara
-// el evento "play" de la Media Session API.
-// Lo usamos para toggle PTT: primera pulsación = hablar,
-// segunda pulsación = silencio.
+// ── MEDIA SESSION (botón auriculares) ──
 function setupMediaSession(){
-  if(!('mediaSession' in navigator))return;
-
-  // Necesitamos un audio element activo para que la Media Session
-  // esté disponible en iOS. Creamos uno silencioso.
-  let silentAudio=document.getElementById('silent-audio');
-  if(!silentAudio){
-    silentAudio=document.createElement('audio');
-    silentAudio.id='silent-audio';
-    silentAudio.loop=true;
-    // 1 segundo de silencio en base64 (WAV)
-    silentAudio.src='data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=';
-    silentAudio.volume=0.001;
-    document.body.appendChild(silentAudio);
+  if(!('mediaSession'in navigator))return;
+  let sa=document.getElementById('sa');
+  if(!sa){
+    sa=document.createElement('audio');sa.id='sa';sa.loop=true;sa.volume=0.001;
+    sa.src='data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=';
+    document.body.appendChild(sa);
   }
-  silentAudio.play().catch(()=>{});
-
-  navigator.mediaSession.metadata = new MediaMetadata({
-    title: 'Tally Intercom',
-    artist: myIdentity || 'Operador',
-  });
-
-  // Botón central auriculares → toggle PTT
-  navigator.mediaSession.setActionHandler('play', ()=>{
-    if(!headsetPttOn){
-      headsetPttOn=true;
-      pttPress();
-      document.getElementById('headset-hint')&&
-        (document.getElementById('headset-hint').textContent='🎙 Auriculares: HABLANDO — pulsa para silenciar');
-      document.getElementById('headset-hint')&&
-        document.getElementById('headset-hint').classList.add('active');
-    } else {
-      headsetPttOn=false;
-      pttRelease();
-      document.getElementById('headset-hint')&&
-        (document.getElementById('headset-hint').textContent='Auriculares: botón central para hablar');
-      document.getElementById('headset-hint')&&
-        document.getElementById('headset-hint').classList.remove('active');
+  sa.play().catch(()=>{});
+  navigator.mediaSession.metadata=new MediaMetadata({title:'Tally Intercom',artist:myId||''});
+  const toggle=()=>{
+    if(!headsetOn){headsetOn=true;pttPress();
+      const n=document.getElementById('headset-note');if(n){n.textContent='🎙 Hablando — pulsa para silenciar';n.classList.add('on');}
+    }else{headsetOn=false;pttRelease();
+      const n=document.getElementById('headset-note');if(n){n.textContent='Auriculares: botón central para hablar';n.classList.remove('on');}
     }
-  });
-
-  // En algunos Android el botón central dispara 'pause' en vez de 'play'
-  navigator.mediaSession.setActionHandler('pause', ()=>{
-    if(!headsetPttOn){
-      headsetPttOn=true; pttPress();
-    } else {
-      headsetPttOn=false; pttRelease();
-    }
-  });
+  };
+  navigator.mediaSession.setActionHandler('play',toggle);
+  navigator.mediaSession.setActionHandler('pause',toggle);
 }
 
-// ═══ SOCKET.IO ═════════════════════════════════════════════════
+// ── SOCKET ──
 const socket=io(window.location.origin,{query:{role:'client'},reconnection:true,reconnectionDelay:2000});
-socket.on('connect',()=>{
-  document.getElementById('menu-dot').classList.add('on');
-  document.getElementById('menu-conn').textContent='Conectado';
-});
-socket.on('disconnect',()=>{
-  document.getElementById('menu-dot').classList.remove('on');
-  document.getElementById('menu-conn').textContent='Reconectando...';
-  bridgeOn=false; updateTallyScreen();
-});
-socket.on('bridge-status',data=>{bridgeOn=data.connected;updateGrid();updateTallyScreen();});
-socket.on('tally-update', data=>{tallyInputs=data.inputs||{};updateGrid();updateTallyScreen();});
+socket.on('connect',()=>{document.getElementById('menu-dot').classList.add('on');document.getElementById('menu-conn').textContent='Conectado';});
+socket.on('disconnect',()=>{document.getElementById('menu-dot').classList.remove('on');document.getElementById('menu-conn').textContent='Reconectando...';bridgeOn=false;updateTally();});
+socket.on('bridge-status',d=>{bridgeOn=d.connected;updateGrid();updateTally();});
+socket.on('tally-update', d=>{tallyInputs=d.inputs||{};updateGrid();updateTally();});
 
-// ═══ INICIO ════════════════════════════════════════════════════
+// ── INICIO ──
 if(localStorage.getItem('permsGranted')==='1'){
-  // Recuperar cámara silenciosamente
-  navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}})
-    .then(s=>{torchTrack=s.getVideoTracks()[0];}).catch(()=>{});
-
-  const savedMode=localStorage.getItem('tallyMode');
-  const savedCam=localStorage.getItem('selectedCam');
-  if(savedMode){
-    enterMode(savedMode);
-    if(savedCam){
-      const cam=(savedMode==='plato'?CAMERAS_PLATO:CAMERAS_ENG).find(c=>c.input===savedCam);
-      if(cam){selectCam(cam);}else{show('screen-select');}
-    }else{show('screen-select');}
-  }else{show('screen-menu');}
+  navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}}).then(s=>{torchTrack=s.getVideoTracks()[0];}).catch(()=>{});
+  const sm=localStorage.getItem('tallyMode');
+  const sc=localStorage.getItem('selectedCam');
+  if(sm){
+    enterMode(sm);
+    if(sc){
+      const cam=(sm==='plato'?CAMS_PLATO:CAMS_ENG).find(c=>c.input===sc);
+      if(cam)selectCam(cam);else show('screen-select');
+    }else show('screen-select');
+  }else show('screen-menu');
 }
-// else: muestra screen-perms (ya activo por defecto)
 </script>
 </body>
 </html>
