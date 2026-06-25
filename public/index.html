@@ -255,6 +255,41 @@
     .headset-note{font-size:11px;color:var(--muted);text-align:center;margin-top:8px;letter-spacing:.3px}
     .headset-note.on{color:var(--ptt)}
 
+    /* ── CONTROL REALIZACIÓN ── */
+    #screen-realizacion{padding:0}
+    .real-topbar{display:flex;align-items:center;padding:16px;gap:10px;flex-shrink:0;border-bottom:1px solid var(--border)}
+    .real-title{font-size:16px;font-weight:700;flex:1}
+    .real-status-dot{width:10px;height:10px;border-radius:50%;background:var(--muted2);transition:background .3s;flex-shrink:0}
+    .real-status-dot.on{background:var(--green);box-shadow:0 0 8px var(--green)}
+    .real-body{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;gap:24px}
+    .real-mic-indicator{
+      width:120px;height:120px;border-radius:50%;
+      border:2px solid var(--border);background:var(--surface);
+      display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;
+      transition:border-color .2s,background .2s,box-shadow .2s;
+    }
+    .real-mic-indicator.active{
+      border-color:var(--green);background:rgba(0,200,83,.08);
+      box-shadow:0 0 32px rgba(0,200,83,.2);
+    }
+    .real-mic-icon{font-size:36px}
+    .real-mic-label{font-size:9px;font-weight:700;letter-spacing:2px;color:var(--muted);text-transform:uppercase}
+    .real-mic-indicator.active .real-mic-label{color:var(--green)}
+    .real-gate-section{width:100%;max-width:360px}
+    .real-gate-label{font-size:10px;font-weight:600;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center}
+    .real-gate-value{font-size:13px;font-weight:700;color:var(--text);letter-spacing:0}
+    .real-gate-slider{width:100%;-webkit-appearance:none;appearance:none;height:3px;border-radius:2px;background:var(--border);outline:none;cursor:pointer}
+    .real-gate-slider::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--text);cursor:pointer;transition:transform .1s}
+    .real-gate-slider::-webkit-slider-thumb:active{transform:scale(1.2)}
+    .real-meter{width:100%;max-width:360px}
+    .real-meter-label{font-size:10px;font-weight:600;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:8px}
+    .real-meter-bar{height:6px;border-radius:3px;background:var(--border);overflow:hidden}
+    .real-meter-fill{height:100%;width:0%;border-radius:3px;background:var(--green);transition:width .05s linear}
+    .real-meter-fill.loud{background:var(--ptt)}
+    .real-meter-fill.clip{background:#ff0000}
+    .real-participants{width:100%;max-width:360px;flex:1;overflow-y:auto}
+    .real-part-label{font-size:10px;font-weight:600;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:8px}
+
     /* Landscape tally */
     @media(orientation:landscape){
       #screen-tally{flex-direction:row}
@@ -308,6 +343,11 @@
         <div class="card-eyebrow">MODO 03</div>
         <div class="card-title">Solo Intercom</div>
         <div class="card-desc">Realización, sonido o dirección sin tally</div>
+      </div>
+      <div class="menu-card" onclick="enterRealizacion()" style="border-color:#1a3a1a">
+        <div class="card-eyebrow" style="color:#00C853">MODO 04</div>
+        <div class="card-title">Control de Realización</div>
+        <div class="card-desc">Micrófono siempre abierto · Puerta de ruido ajustable · Para el PC del CrossNET</div>
       </div>
     </div>
     <div class="menu-conn">
@@ -377,6 +417,40 @@
       <span class="ptt-dot"></span>MANTÉN PARA HABLAR
     </button>
     <div class="headset-note" id="headset-note">Auriculares: botón central para hablar</div>
+  </div>
+</div>
+
+<!-- CONTROL REALIZACIÓN -->
+<div id="screen-realizacion" class="screen">
+  <div class="real-topbar">
+    <div class="nav-back" onclick="goMenu()">
+      <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+    </div>
+    <div class="real-title">Control de Realización</div>
+    <div class="real-status-dot" id="real-dot"></div>
+  </div>
+  <div class="real-body">
+    <div class="real-mic-indicator" id="real-mic-indicator">
+      <span class="real-mic-icon">🎙</span>
+      <span class="real-mic-label" id="real-mic-label">ESCUCHANDO</span>
+    </div>
+    <div class="real-meter">
+      <div class="real-meter-label">Nivel de entrada</div>
+      <div class="real-meter-bar"><div class="real-meter-fill" id="real-meter-fill"></div></div>
+    </div>
+    <div class="real-gate-section">
+      <div class="real-gate-label">
+        Puerta de ruido
+        <span class="real-gate-value" id="real-gate-value">–40 dB</span>
+      </div>
+      <input type="range" class="real-gate-slider" id="real-gate-slider"
+        min="-60" max="0" value="-40" step="1"
+        oninput="updateGate(this.value)"/>
+    </div>
+    <div class="real-participants">
+      <div class="real-part-label">En sala</div>
+      <div id="real-participants-list"></div>
+    </div>
   </div>
 </div>
 
@@ -635,6 +709,132 @@ function setupMediaSession(){
   navigator.mediaSession.setActionHandler('pause',toggle);
 }
 
+// ── CONTROL REALIZACIÓN ──
+let realMode=false;
+let audioCtx=null, analyser=null, micStream=null, gateThreshold=-40;
+let noiseGateInterval=null, meterInterval=null;
+
+function enterRealizacion(){
+  realMode=true;
+  myId='Realización';
+  localStorage.setItem('tallyMode','realizacion');
+  show('screen-realizacion');
+  joinRealizacion();
+}
+
+async function joinRealizacion(){
+  // Conectar al intercom de LiveKit con micrófono abierto
+  try{
+    const res=await fetch(`/livekit-token?room=intercom&identity=Realizaci%C3%B3n`);
+    const data=await res.json();
+    lkRoom=new LivekitClient.Room({
+      audioCaptureDefaults:{echoCancellation:true,noiseSuppression:true,autoGainControl:false},
+      adaptiveStream:true,
+    });
+    lkRoom.on(LivekitClient.RoomEvent.ParticipantConnected,    updateRealParticipants);
+    lkRoom.on(LivekitClient.RoomEvent.ParticipantDisconnected, updateRealParticipants);
+    lkRoom.on(LivekitClient.RoomEvent.TrackSubscribed,         t=>{if(t.kind===LivekitClient.Track.Kind.Audio){const e=t.attach();e.id='aud-'+t.sid;document.body.appendChild(e);}});
+    lkRoom.on(LivekitClient.RoomEvent.TrackUnsubscribed,       t=>{const e=document.getElementById('aud-'+t.sid);if(e)e.remove();});
+    lkRoom.on(LivekitClient.RoomEvent.ActiveSpeakersChanged,   spk=>{activeSpeakers=new Set(spk.map(s=>s.identity));updateRealParticipants();});
+    lkRoom.on(LivekitClient.RoomEvent.Disconnected,            ()=>{
+      document.getElementById('real-dot').classList.remove('on');
+    });
+
+    await lkRoom.connect(data.url,data.token);
+
+    // Capturar micrófono con Web Audio API para análisis de nivel
+    micStream=await navigator.mediaDevices.getUserMedia({
+      audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:false}
+    });
+    audioCtx=new AudioContext();
+    const source=audioCtx.createMediaStreamSource(micStream);
+    analyser=audioCtx.createAnalyser();
+    analyser.fftSize=256;
+    source.connect(analyser);
+
+    // Publicar el micrófono en LiveKit — empieza muteado, noise gate decide
+    localTrack=await LivekitClient.createLocalAudioTrack({
+      echoCancellation:true,noiseSuppression:true,autoGainControl:false
+    });
+    await lkRoom.localParticipant.publishTrack(localTrack,{muted:true});
+    await localTrack.mute();
+
+    document.getElementById('real-dot').classList.add('on');
+    updateRealParticipants();
+
+    // Iniciar noise gate y medidor
+    startNoiseGate();
+    startMeter();
+
+  }catch(e){
+    console.error('Realización LiveKit error:',e);
+  }
+}
+
+function updateGate(val){
+  gateThreshold=parseInt(val);
+  document.getElementById('real-gate-value').textContent=`${val} dB`;
+}
+
+function getLevel(){
+  if(!analyser)return -Infinity;
+  const data=new Uint8Array(analyser.frequencyBinCount);
+  analyser.getByteFrequencyData(data);
+  const avg=data.reduce((a,b)=>a+b,0)/data.length;
+  // Convertir 0-255 a dB aproximado
+  return avg===0 ? -Infinity : 20*Math.log10(avg/255);
+}
+
+function startNoiseGate(){
+  if(noiseGateInterval)clearInterval(noiseGateInterval);
+  noiseGateInterval=setInterval(async()=>{
+    if(!localTrack||!lkRoom)return;
+    const level=getLevel();
+    const shouldSpeak=level>gateThreshold;
+    const indicator=document.getElementById('real-mic-indicator');
+    const label=document.getElementById('real-mic-label');
+    if(shouldSpeak&&pttActive===false){
+      // Abrir micrófono
+      pttActive=true;
+      await localTrack.unmute();
+      indicator&&indicator.classList.add('active');
+      if(label)label.textContent='TRANSMITIENDO';
+    }else if(!shouldSpeak&&pttActive===true){
+      // Cerrar micrófono
+      pttActive=false;
+      await localTrack.mute();
+      indicator&&indicator.classList.remove('active');
+      if(label)label.textContent='ESCUCHANDO';
+    }
+  },80); // Comprueba cada 80ms
+}
+
+function startMeter(){
+  if(meterInterval)clearInterval(meterInterval);
+  meterInterval=setInterval(()=>{
+    const level=getLevel();
+    const fill=document.getElementById('real-meter-fill');
+    if(!fill)return;
+    // Mapear -60dB..0dB a 0%..100%
+    const pct=Math.max(0,Math.min(100,((level+60)/60)*100));
+    fill.style.width=pct+'%';
+    fill.className='real-meter-fill'+(level>-6?' clip':level>-18?' loud':'');
+  },50);
+}
+
+function updateRealParticipants(){
+  const list=document.getElementById('real-participants-list');
+  if(!list||!lkRoom)return;
+  list.innerHTML='';
+  [lkRoom.localParticipant,...lkRoom.remoteParticipants.values()].forEach(p=>{
+    const spk=activeSpeakers.has(p.identity);
+    const row=document.createElement('div');
+    row.className='p-row';
+    row.innerHTML=`<div class="p-avatar ${spk?'speaking':''}">${p.identity[0].toUpperCase()}</div><div class="p-info"><div class="p-name">${p.identity}${p.isLocal?' (tú)':''}</div><div class="p-state ${spk?'speaking':''}">${spk?'Hablando':'En escucha'}</div></div>`;
+    list.appendChild(row);
+  });
+}
+
 // ── SOCKET ──
 const socket=io(window.location.origin,{query:{role:'client'},reconnection:true,reconnectionDelay:2000});
 socket.on('connect',()=>{document.getElementById('menu-dot').classList.add('on');document.getElementById('menu-conn').textContent='Conectado';});
@@ -647,7 +847,9 @@ if(localStorage.getItem('permsGranted')==='1'){
   navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}}).then(s=>{torchTrack=s.getVideoTracks()[0];}).catch(()=>{});
   const sm=localStorage.getItem('tallyMode');
   const sc=localStorage.getItem('selectedCam');
-  if(sm){
+  if(sm==='realizacion'){
+    enterRealizacion();
+  }else if(sm){
     enterMode(sm);
     if(sc){
       const cam=(sm==='plato'?CAMS_PLATO:CAMS_ENG).find(c=>c.input===sc);
