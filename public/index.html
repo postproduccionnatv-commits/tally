@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no"/>
   <meta name="apple-mobile-web-app-capable" content="yes"/>
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
   <meta name="apple-mobile-web-app-title" content="Tally"/>
@@ -10,361 +10,333 @@
   <link rel="manifest" href="/manifest.json"/>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;400;600;700;900&display=swap" rel="stylesheet"/>
-  <title>Tally</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <title>Tally · GBS Multimedia</title>
   <style>
     :root{
-      --bg:       #0A0A0A;
-      --surface:  #141414;
-      --surface2: #1C1C1C;
-      --border:   #2A2A2A;
-      --text:     #F0F0F0;
-      --muted:    #4A4A4A;
-      --muted2:   #2A2A2A;
-      --pgm:      #CC0000;
-      --pgm-dim:  #3A0000;
-      --prev:     #007A00;
-      --prev-dim: #003A00;
-      --ptt:      #E55A00;
-      --ptt-glow: rgba(229,90,0,0.25);
-      --green:    #00C853;
-      --radius:   14px;
-      --radius-sm:9px;
+      --bg:#0A0A0A; --surface:#141414; --surface2:#1C1C1C; --surface3:#242424;
+      --border:#2A2A2A; --border2:#383838;
+      --text:#F5F5F5; --text2:#A0A0A0; --muted:#5A5A5A; --muted2:#2E2E2E;
+      --pgm:#E50914; --prev:#00B341; --ptt:#FF6B00; --ptt-glow:rgba(255,107,0,.3);
+      --green:#00C853; --amber:#FF9500;
+      --r:16px; --r-sm:11px; --r-lg:22px;
+      --safe-t:env(safe-area-inset-top); --safe-b:env(safe-area-inset-bottom);
+      --safe-l:env(safe-area-inset-left); --safe-r:env(safe-area-inset-right);
     }
     *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-    html,body{
-      font-family:'Inter',system-ui,sans-serif;
-      background:var(--bg);color:var(--text);
-      width:100%;height:100%;overflow:hidden;user-select:none;
-      -webkit-font-smoothing:antialiased;
-    }
-    #app{
-      position:fixed;inset:0;display:flex;flex-direction:column;
-      padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
-    }
-    .screen{display:none;flex-direction:column;flex:1;overflow:hidden}
+    html,body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);width:100%;height:100%;overflow:hidden;user-select:none;-webkit-font-smoothing:antialiased}
+    #app{position:fixed;inset:0;display:flex;flex-direction:column;padding:var(--safe-t) var(--safe-r) var(--safe-b) var(--safe-l)}
+    .screen{display:none;flex-direction:column;flex:1;overflow:hidden;min-height:0}
     .screen.active{display:flex}
+    button{font-family:inherit}
 
-    /* ── TIPOGRAFÍA ── */
-    .label{font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--muted)}
-    .mono{font-variant-numeric:tabular-nums}
+    /* SCROLL */
+    .scroll{overflow-y:auto;-webkit-overflow-scrolling:touch}
+    .scroll::-webkit-scrollbar{width:0}
 
-    /* ── PERMISOS ── */
-    #screen-perms{align-items:center;justify-content:center;padding:32px;text-align:center;gap:0}
-    .perms-logo{font-size:11px;font-weight:600;letter-spacing:3px;color:var(--muted);margin-bottom:48px}
-    .perms-title{font-size:clamp(22px,6vw,30px);font-weight:700;margin-bottom:10px;line-height:1.1}
-    .perms-sub{font-size:14px;color:var(--muted);margin-bottom:36px;line-height:1.7;max-width:300px}
-    .perms-list{width:100%;max-width:320px;margin-bottom:24px;display:flex;flex-direction:column;gap:8px}
-    .perm-row{
-      display:flex;align-items:center;gap:14px;
-      padding:14px 16px;border-radius:var(--radius);
-      border:1px solid var(--border);background:var(--surface);
-    }
-    .perm-icon{font-size:20px;flex-shrink:0}
-    .perm-name{font-size:13px;font-weight:600;flex:1;text-align:left}
-    .perm-status{font-size:16px;min-width:20px}
-    .btn-primary{
-      width:100%;max-width:320px;height:52px;border-radius:var(--radius);
-      border:none;background:var(--text);color:var(--bg);
-      font-family:inherit;font-size:14px;font-weight:700;letter-spacing:.5px;
-      cursor:pointer;transition:opacity .15s;
-    }
-    .btn-primary:active{opacity:.8}
+    /* NAV BACK — clara en todas las pantallas */
+    .topbar{display:flex;align-items:center;gap:12px;padding:14px 16px;flex-shrink:0;border-bottom:1px solid var(--border);background:var(--bg);min-height:56px}
+    .btn-back{display:flex;align-items:center;gap:7px;font-size:14px;font-weight:600;color:var(--text2);cursor:pointer;padding:8px 14px 8px 10px;border-radius:100px;border:1px solid var(--border);background:var(--surface);transition:all .15s;flex-shrink:0}
+    .btn-back:active{background:var(--surface2);color:var(--text)}
+    .btn-back svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+    .topbar-title{font-size:16px;font-weight:700;flex:1}
+    .topbar-right{font-size:11px;font-weight:600;letter-spacing:1px;color:var(--muted)}
+    .topbar-right.on{color:var(--green)}
 
-    /* ── MENÚ ── */
-    #screen-menu{justify-content:center;overflow-y:auto}
-    .menu-inner{display:flex;flex-direction:column;align-items:center;padding:32px 24px;gap:0}
-    .menu-wordmark{font-size:11px;font-weight:600;letter-spacing:3px;color:var(--muted);margin-bottom:48px}
-    .menu-title{font-size:clamp(24px,7vw,34px);font-weight:700;text-align:center;line-height:1.1;margin-bottom:8px}
-    .menu-sub{font-size:13px;color:var(--muted);text-align:center;margin-bottom:40px}
-    .menu-cards{width:100%;max-width:360px;display:flex;flex-direction:column;gap:8px;margin-bottom:32px}
-    @media(orientation:landscape){
-      .menu-cards{flex-direction:row;max-width:700px}
-      .menu-card{flex:1}
-    }
-    .menu-card{
-      padding:20px;border-radius:var(--radius);
-      border:1px solid var(--border);background:var(--surface);
-      cursor:pointer;text-align:left;transition:border-color .2s,background .15s;
-    }
-    .menu-card:active{background:var(--surface2)}
-    .menu-card:hover{border-color:#444}
-    .card-eyebrow{font-size:10px;font-weight:600;letter-spacing:2px;color:var(--muted);margin-bottom:8px}
-    .card-title{font-size:16px;font-weight:700;margin-bottom:4px}
-    .card-desc{font-size:12px;color:var(--muted);line-height:1.5}
-    .menu-conn{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted)}
-    .dot{width:6px;height:6px;border-radius:50%;background:var(--muted2);transition:background .3s;flex-shrink:0}
+    /* ═══ BIENVENIDA ═══ */
+    #screen-welcome{align-items:center;justify-content:center;padding:32px 24px;text-align:center}
+    .w-logo{font-size:12px;font-weight:700;letter-spacing:4px;color:var(--ptt);margin-bottom:8px}
+    .w-title{font-size:clamp(30px,9vw,46px);font-weight:800;line-height:1;margin-bottom:14px;letter-spacing:-1px}
+    .w-sub{font-size:14px;color:var(--text2);margin-bottom:44px;line-height:1.6;max-width:300px;font-weight:400}
+    .w-actions{width:100%;max-width:320px;display:flex;flex-direction:column;gap:12px}
+    .btn-primary{width:100%;height:54px;border-radius:var(--r);border:none;background:var(--text);color:var(--bg);font-size:15px;font-weight:700;letter-spacing:.3px;cursor:pointer;transition:opacity .15s}
+    .btn-primary:active{opacity:.85}
+    .btn-ghost{width:100%;height:50px;border-radius:var(--r);border:1px solid var(--border2);background:transparent;color:var(--text2);font-size:14px;font-weight:600;cursor:pointer;transition:all .15s}
+    .btn-ghost:active{background:var(--surface)}
+    .w-credit{position:absolute;bottom:calc(20px + var(--safe-b));left:0;right:0;text-align:center;font-size:11px;color:var(--muted);font-weight:500;letter-spacing:.5px}
+
+    /* ═══ PERMISOS ═══ */
+    #screen-perms{align-items:center;justify-content:center;padding:32px 24px;text-align:center}
+    .p-title{font-size:clamp(22px,6vw,28px);font-weight:700;margin-bottom:10px}
+    .p-sub{font-size:14px;color:var(--text2);margin-bottom:32px;line-height:1.6;max-width:300px}
+    .p-list{width:100%;max-width:320px;display:flex;flex-direction:column;gap:10px;margin-bottom:24px}
+    .p-row{display:flex;align-items:center;gap:14px;padding:15px 16px;border-radius:var(--r);border:1px solid var(--border);background:var(--surface);text-align:left}
+    .p-icon{font-size:22px}
+    .p-name{font-size:13px;font-weight:600;flex:1}
+    .p-check{font-size:17px;min-width:22px;text-align:center}
+
+    /* ═══ MENÚ ═══ */
+    #screen-menu{justify-content:flex-start}
+    .menu-scroll{flex:1;display:flex;flex-direction:column;align-items:center;padding:36px 24px 24px;overflow-y:auto}
+    .menu-brand{font-size:11px;font-weight:700;letter-spacing:3px;color:var(--ptt);margin-bottom:6px}
+    .menu-h{font-size:clamp(24px,7vw,34px);font-weight:800;text-align:center;line-height:1.05;margin-bottom:8px;letter-spacing:-.5px}
+    .menu-sub{font-size:13px;color:var(--text2);text-align:center;margin-bottom:34px}
+    .menu-cards{width:100%;max-width:380px;display:flex;flex-direction:column;gap:10px}
+    .mcard{display:flex;align-items:center;gap:16px;padding:18px 18px;border-radius:var(--r);border:1px solid var(--border);background:var(--surface);cursor:pointer;text-align:left;transition:all .15s}
+    .mcard:active{background:var(--surface2);transform:scale(.99)}
+    .mcard-icon{width:46px;height:46px;border-radius:12px;background:var(--surface3);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+    .mcard-body{flex:1;min-width:0}
+    .mcard-eyebrow{font-size:9px;font-weight:700;letter-spacing:1.5px;color:var(--muted);margin-bottom:3px}
+    .mcard-title{font-size:17px;font-weight:700;margin-bottom:3px}
+    .mcard-desc{font-size:12px;color:var(--text2);line-height:1.4}
+    .mcard.super{border-color:#1d3a24}
+    .mcard.super .mcard-icon{background:#0f2415}
+    .mcard.super .mcard-eyebrow{color:var(--green)}
+    .menu-conn{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text2);margin-top:28px;padding-bottom:8px}
+    .dot{width:7px;height:7px;border-radius:50%;background:var(--muted2);transition:background .3s;flex-shrink:0}
     .dot.on{background:var(--green)}
 
-    /* ── SELECCIÓN ── */
-    #screen-select{padding:20px 16px 16px}
-    .sel-header{display:flex;align-items:center;gap:12px;margin-bottom:4px;flex-shrink:0}
-    .nav-back{
-      display:flex;align-items:center;gap:6px;
-      font-size:13px;font-weight:600;color:var(--muted);
-      cursor:pointer;padding:4px 0;transition:color .15s;flex-shrink:0;
+    @media(orientation:landscape) and (max-height:520px){
+      .menu-cards{max-width:760px;display:grid;grid-template-columns:1fr 1fr;gap:8px}
+      .menu-h{font-size:24px;margin-bottom:4px}
+      .menu-sub{margin-bottom:18px}
+      .menu-brand{margin-bottom:4px}
+      .mcard{padding:14px}
     }
-    .nav-back:active{color:var(--text)}
-    .nav-back svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-    .sel-title{font-size:18px;font-weight:700;flex:1}
-    .sel-status{font-size:11px;color:var(--muted);margin-bottom:16px;flex-shrink:0}
-    .grid{display:grid;gap:8px;flex:1;overflow-y:auto;align-content:start}
+
+    /* ═══ SELECCIÓN ═══ */
+    #screen-select{padding:0}
+    .sel-status{font-size:12px;color:var(--text2);padding:14px 16px 4px;flex-shrink:0}
+    .grid{display:grid;gap:10px;padding:8px 16px 16px;overflow-y:auto;align-content:start;flex:1}
     .grid.g2{grid-template-columns:repeat(2,1fr)}
     .grid.g3{grid-template-columns:repeat(3,1fr)}
-    @media(orientation:landscape){
-      .grid.g2{grid-template-columns:repeat(3,1fr)}
-      .grid.g3{grid-template-columns:repeat(6,1fr)}
-    }
-    .cam-card{
-      border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--surface);
-      display:flex;flex-direction:column;align-items:center;justify-content:center;
-      cursor:pointer;position:relative;padding:14px 8px;
-      transition:border-color .15s,background .15s;min-height:72px;gap:4px;
-    }
+    @media(orientation:landscape){.grid.g2{grid-template-columns:repeat(4,1fr)}.grid.g3{grid-template-columns:repeat(6,1fr)}}
+    .cam-card{border-radius:var(--r-sm);border:1px solid var(--border);background:var(--surface);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;position:relative;padding:16px 8px;transition:all .15s;min-height:78px;gap:5px}
     .cam-card:active{background:var(--surface2)}
     .cam-card.pgm{background:var(--pgm);border-color:var(--pgm)}
     .cam-card.prev{background:var(--prev);border-color:var(--prev)}
-    .cam-num{font-size:11px;font-weight:600;letter-spacing:1.5px;color:var(--muted)}
-    .cam-card.pgm .cam-num,.cam-card.prev .cam-num{color:rgba(255,255,255,.6)}
-    .cam-label{font-size:14px;font-weight:700}
-    .cam-state{
-      position:absolute;top:7px;right:9px;
-      font-size:8px;font-weight:700;letter-spacing:1.5px;opacity:.9;
-    }
+    .cam-tag{font-size:10px;font-weight:600;letter-spacing:1.5px;color:var(--muted)}
+    .cam-card.pgm .cam-tag,.cam-card.prev .cam-tag{color:rgba(255,255,255,.7)}
+    .cam-n{font-size:18px;font-weight:800}
+    .cam-custom{font-size:10px;font-weight:600;color:var(--text2);margin-top:1px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .cam-card.pgm .cam-custom,.cam-card.prev .cam-custom{color:rgba(255,255,255,.85)}
+    .cam-badge{position:absolute;top:7px;right:9px;font-size:8px;font-weight:800;letter-spacing:1px;opacity:.9}
 
-    /* ── TALLY ── */
-    #screen-tally{position:relative;transition:background .15s}
+    /* ═══ TALLY ═══ */
+    #screen-tally{position:relative;background:var(--bg)}
+    .tally-top{display:flex;align-items:center;gap:12px;padding:12px 16px;flex-shrink:0;background:rgba(10,10,10,.9);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);z-index:30;position:relative;min-height:54px}
+    .tally-top .topbar-title{font-size:14px;opacity:.85;text-align:center}
+    .tally-ic{font-size:10px;font-weight:700;letter-spacing:1px;color:var(--muted);min-width:46px;text-align:right}
+    .tally-ic.on{color:var(--green)}
 
-    /* Barra top: siempre visible y clara */
-    .tally-topbar{
-      display:flex;align-items:center;gap:10px;
-      padding:14px 16px;flex-shrink:0;
-      background:rgba(0,0,0,.4);backdrop-filter:blur(20px);
-      border-bottom:1px solid rgba(255,255,255,.06);z-index:10;
-    }
-    .tally-topbar .nav-back{color:rgba(255,255,255,.5)}
-    .tally-topbar .nav-back:active{color:#fff}
-    .topbar-cam{font-size:13px;font-weight:600;flex:1;opacity:.7;text-align:center}
-    .topbar-ic{font-size:10px;font-weight:600;letter-spacing:1.5px;color:var(--muted);min-width:52px;text-align:right}
-    .topbar-ic.on{color:var(--green)}
+    .tally-body{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:0;position:relative;overflow:hidden}
+    /* Canvas para el patrón de círculos (ahorro energía) */
+    #tally-canvas{position:absolute;inset:0;width:100%;height:100%;z-index:1}
+    .tally-overlay{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;text-align:center;padding:16px}
+    .tally-eyebrow{font-size:11px;font-weight:700;letter-spacing:3px;color:var(--muted);margin-bottom:14px;text-transform:uppercase;transition:color .15s}
+    .tally-state{font-size:clamp(38px,12vw,80px);font-weight:900;letter-spacing:1px;line-height:1;transition:color .15s}
 
-    /* Estado principal: pantalla completa, minimalista */
-    .tally-body{
-      flex:1;display:flex;flex-direction:column;
-      align-items:center;justify-content:center;
-      min-height:0;padding:16px;
-    }
-    .tally-eyebrow{
-      font-size:10px;font-weight:600;letter-spacing:3px;
-      color:rgba(255,255,255,.3);margin-bottom:12px;
-      text-transform:uppercase;transition:color .15s;
-    }
-    .tally-state{
-      font-size:clamp(44px,14vw,88px);font-weight:900;
-      letter-spacing:2px;text-align:center;line-height:1;
-      transition:color .15s;
-    }
+    /* Speaker grande */
+    .speaker-zone{flex-shrink:0;min-height:72px;display:flex;align-items:center;justify-content:center;padding:8px 16px;z-index:5}
+    .speaker-big{display:flex;align-items:center;gap:12px;background:rgba(255,107,0,.16);border:1.5px solid rgba(255,107,0,.5);border-radius:100px;padding:12px 28px;animation:popIn .2s ease;max-width:100%}
+    .speaker-big .sb-dot{width:10px;height:10px;border-radius:50%;background:var(--ptt);flex-shrink:0;animation:blink 1s infinite}
+    .speaker-big .sb-name{font-size:clamp(20px,5.5vw,30px);font-weight:800;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    @keyframes popIn{from{opacity:0;transform:scale(.85)}to{opacity:1;transform:scale(1)}}
+    @keyframes blink{0%,100%{opacity:1}50%{opacity:.25}}
 
-    /* Quién habla: limpio y prominente */
-    .speakers-area{
-      flex-shrink:0;min-height:56px;
-      display:flex;flex-wrap:wrap;justify-content:center;align-items:center;
-      gap:8px;padding:8px 16px;
-    }
-    .speaker-pill{
-      display:flex;align-items:center;gap:8px;
-      background:rgba(229,90,0,.15);
-      border:1px solid rgba(229,90,0,.35);
-      border-radius:100px;padding:8px 18px;
-      font-size:clamp(15px,4vw,19px);font-weight:700;color:#fff;
-      animation:fadeUp .2s ease;
-    }
-    .speaker-pill::before{content:'';width:7px;height:7px;border-radius:50%;background:var(--ptt);flex-shrink:0;animation:blink 1s infinite}
-    @keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
-    @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+    /* Previo (plató) */
+    .tally-prev{flex-shrink:0;padding:10px 16px 12px;text-align:center;border-top:1px solid var(--border);z-index:5}
+    .tp-label{font-size:9px;font-weight:700;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:4px}
+    .tp-name{font-size:17px;font-weight:800;color:var(--prev);min-height:22px}
 
-    /* Previo */
-    .tally-prev{
-      flex-shrink:0;padding:10px 16px 12px;text-align:center;
-      border-top:1px solid rgba(255,255,255,.06);
-    }
-    .prev-eyebrow{font-size:9px;font-weight:600;letter-spacing:2px;color:rgba(255,255,255,.25);text-transform:uppercase;margin-bottom:4px}
-    .prev-name{font-size:16px;font-weight:700;color:var(--green);min-height:22px}
+    /* ═══ BARRA INTERCOM (3 botones) ═══ */
+    .ic-bar{flex-shrink:0;padding:10px 12px calc(12px + var(--safe-b));background:rgba(10,10,10,.95);backdrop-filter:blur(20px);border-top:1px solid var(--border);display:flex;flex-direction:column;gap:8px;z-index:30}
+    .ic-mic-state{display:flex;align-items:center;justify-content:center;gap:8px;font-size:11px;font-weight:700;letter-spacing:1.5px;color:var(--muted);text-transform:uppercase;min-height:16px}
+    .ic-mic-state .ms-dot{width:8px;height:8px;border-radius:50%;background:var(--muted2)}
+    .ic-mic-state.open{color:var(--ptt)}
+    .ic-mic-state.open .ms-dot{background:var(--ptt);animation:blink 1s infinite}
+    .ic-btns{display:flex;gap:8px}
+    .ptt{flex:1;height:60px;border-radius:var(--r);border:1px solid var(--border2);background:var(--surface);color:var(--text2);font-size:13px;font-weight:700;letter-spacing:.5px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;transition:all .1s;-webkit-user-select:none;touch-action:none}
+    .ptt .ptt-ico{font-size:18px;line-height:1}
+    .ptt.active{background:var(--ptt);border-color:var(--ptt);color:#fff;box-shadow:0 0 24px var(--ptt-glow)}
+    .ptt.locked{background:var(--green);border-color:var(--green);color:#fff;box-shadow:0 0 24px rgba(0,200,83,.3)}
 
-    /* Intercom bar */
-    .ic-bar{
-      flex-shrink:0;padding:10px 14px;
-      padding-bottom:max(12px,env(safe-area-inset-bottom));
-      background:rgba(0,0,0,.6);backdrop-filter:blur(20px);
-      border-top:1px solid rgba(255,255,255,.06);
-      display:flex;align-items:center;gap:10px;
-    }
-    .ptt-btn{
-      flex:1;height:clamp(52px,12vw,68px);
-      border-radius:var(--radius);border:1px solid var(--border);
-      background:var(--surface);color:var(--muted);
-      font-family:inherit;font-size:clamp(13px,3.5vw,16px);
-      font-weight:700;letter-spacing:1px;cursor:pointer;
-      display:flex;align-items:center;justify-content:center;gap:8px;
-      transition:all .1s;-webkit-user-select:none;touch-action:none;
-    }
-    .ptt-btn .ptt-dot{width:8px;height:8px;border-radius:50%;background:var(--muted2);transition:background .1s;flex-shrink:0}
-    .ptt-btn.active{background:var(--ptt);border-color:var(--ptt);color:#fff;box-shadow:0 0 24px var(--ptt-glow)}
-    .ptt-btn.active .ptt-dot{background:#fff}
-
-    /* ── INTERCOM STANDALONE ── */
-    #screen-intercom{padding:0}
-    .ic-topbar{display:flex;align-items:center;padding:16px;gap:10px;flex-shrink:0;border-bottom:1px solid var(--border)}
-    .ic-topbar-title{font-size:16px;font-weight:700;flex:1}
-    .ic-badge{font-size:10px;font-weight:600;letter-spacing:1.5px;color:var(--muted)}
-    .ic-badge.on{color:var(--green)}
-    .participants{flex:1;overflow-y:auto;padding:8px 16px}
-    @media(orientation:landscape){
-      .participants{display:grid;grid-template-columns:1fr 1fr;gap:0 16px;align-content:start}
-    }
-    .p-row{
-      display:flex;align-items:center;gap:14px;
-      padding:14px 0;border-bottom:1px solid var(--border);
-    }
-    .p-avatar{
-      width:40px;height:40px;border-radius:50%;
-      background:var(--surface2);border:1px solid var(--border);
-      display:flex;align-items:center;justify-content:center;
-      font-size:15px;font-weight:700;color:var(--muted);flex-shrink:0;
-      transition:background .2s,border-color .2s,color .2s;
-    }
-    .p-avatar.speaking{background:var(--ptt);border-color:var(--ptt);color:#fff}
-    .p-info{flex:1;min-width:0}
-    .p-name{font-size:15px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .p-state{font-size:11px;color:var(--muted);margin-top:2px;font-weight:500}
-    .p-state.speaking{color:var(--ptt)}
-
-    .ptt-wrap{flex-shrink:0;padding:12px 16px;padding-bottom:max(16px,env(safe-area-inset-bottom))}
-    .ptt-big{
-      width:100%;height:clamp(72px,18vw,96px);
-      border-radius:var(--radius);border:1px solid var(--border);
-      background:var(--surface);color:var(--muted);
-      font-family:inherit;font-size:clamp(16px,5vw,22px);
-      font-weight:700;letter-spacing:1.5px;cursor:pointer;
-      display:flex;align-items:center;justify-content:center;gap:10px;
-      transition:all .1s;-webkit-user-select:none;touch-action:none;
-    }
-    .ptt-big .ptt-dot{width:9px;height:9px;border-radius:50%;background:var(--muted2);transition:background .1s;flex-shrink:0}
-    .ptt-big.active{background:var(--ptt);border-color:var(--ptt);color:#fff;box-shadow:0 0 32px var(--ptt-glow)}
-    .ptt-big.active .ptt-dot{background:#fff;animation:blink 1s infinite}
-    .headset-note{font-size:11px;color:var(--muted);text-align:center;margin-top:8px;letter-spacing:.3px}
-    .headset-note.on{color:var(--ptt)}
-
-    /* ── CONTROL REALIZACIÓN ── */
-    #screen-realizacion{padding:0}
-    .real-topbar{display:flex;align-items:center;padding:16px;gap:10px;flex-shrink:0;border-bottom:1px solid var(--border)}
-    .real-title{font-size:16px;font-weight:700;flex:1}
-    .real-status-dot{width:10px;height:10px;border-radius:50%;background:var(--muted2);transition:background .3s;flex-shrink:0}
-    .real-status-dot.on{background:var(--green);box-shadow:0 0 8px var(--green)}
-    .real-body{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;gap:24px}
-    .real-mic-indicator{
-      width:120px;height:120px;border-radius:50%;
-      border:2px solid var(--border);background:var(--surface);
-      display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;
-      transition:border-color .2s,background .2s,box-shadow .2s;
-    }
-    .real-mic-indicator.active{
-      border-color:var(--green);background:rgba(0,200,83,.08);
-      box-shadow:0 0 32px rgba(0,200,83,.2);
-    }
-    .real-mic-icon{font-size:36px}
-    .real-mic-label{font-size:9px;font-weight:700;letter-spacing:2px;color:var(--muted);text-transform:uppercase}
-    .real-mic-indicator.active .real-mic-label{color:var(--green)}
-    .real-gate-section{width:100%;max-width:360px}
-    .real-gate-label{font-size:10px;font-weight:600;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center}
-    .real-gate-value{font-size:13px;font-weight:700;color:var(--text);letter-spacing:0}
-    .real-gate-slider{width:100%;-webkit-appearance:none;appearance:none;height:3px;border-radius:2px;background:var(--border);outline:none;cursor:pointer}
-    .real-gate-slider::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--text);cursor:pointer;transition:transform .1s}
-    .real-gate-slider::-webkit-slider-thumb:active{transform:scale(1.2)}
-    .real-meter{width:100%;max-width:360px}
-    .real-meter-label{font-size:10px;font-weight:600;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:8px}
-    .real-meter-bar{height:6px;border-radius:3px;background:var(--border);overflow:hidden}
-    .real-meter-fill{height:100%;width:0%;border-radius:3px;background:var(--green);transition:width .05s linear}
-    .real-meter-fill.loud{background:var(--ptt)}
-    .real-meter-fill.clip{background:#ff0000}
-    .real-participants{width:100%;max-width:360px;flex:1;overflow-y:auto}
-    .real-part-label{font-size:10px;font-weight:600;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:8px}
-
-    /* Landscape tally */
     @media(orientation:landscape){
       #screen-tally{flex-direction:row}
-      .tally-left{flex:1;display:flex;flex-direction:column;min-width:0}
-      .ic-bar{flex-direction:column;width:160px;border-top:none;border-left:1px solid rgba(255,255,255,.06);padding:16px 12px;padding-bottom:max(16px,env(safe-area-inset-bottom));justify-content:center;gap:12px}
-      .ptt-btn{width:100%;height:80px;flex-direction:column;font-size:13px;gap:6px}
+      .tally-main-col{flex:1;display:flex;flex-direction:column;min-width:0}
+      .ic-bar{flex-direction:column;width:150px;border-top:none;border-left:1px solid var(--border);justify-content:center;padding:14px 10px calc(14px + var(--safe-b))}
+      .ic-btns{flex-direction:column}
+      .ptt{height:64px}
     }
+
+    /* ═══ INTERCOM STANDALONE ═══ */
+    #screen-intercom{padding:0}
+    .ic-list{flex:1;overflow-y:auto;padding:8px 16px}
+    @media(orientation:landscape){.ic-list{display:grid;grid-template-columns:1fr 1fr;gap:0 16px;align-content:start}}
+    .pr{display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:1px solid var(--border)}
+    .pr-av{width:42px;height:42px;border-radius:50%;background:var(--surface2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:var(--muted);flex-shrink:0;transition:all .2s}
+    .pr-av.spk{background:var(--ptt);border-color:var(--ptt);color:#fff}
+    .pr-info{flex:1;min-width:0}
+    .pr-name{font-size:15px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .pr-state{font-size:11px;color:var(--muted);margin-top:2px}
+    .pr-state.spk{color:var(--ptt)}
+    .ic-foot{flex-shrink:0;padding:12px 16px calc(16px + var(--safe-b))}
+
+    /* ═══ REALIZACIÓN ═══ */
+    #screen-realizacion{padding:0}
+    .real-scroll{flex:1;overflow-y:auto;padding:16px}
+    .real-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:12px}
+    .real-card-h{font-size:11px;font-weight:700;letter-spacing:1.5px;color:var(--text2);text-transform:uppercase;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+    .real-mic-box{display:flex;align-items:center;gap:16px}
+    .real-mic-circ{width:64px;height:64px;border-radius:50%;border:2px solid var(--border2);background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0;transition:all .2s}
+    .real-mic-circ.on{border-color:var(--green);background:rgba(0,200,83,.1);box-shadow:0 0 20px rgba(0,200,83,.25)}
+    .real-mic-txt{flex:1}
+    .real-mic-label{font-size:9px;font-weight:700;letter-spacing:1.5px;color:var(--muted);text-transform:uppercase;margin-bottom:4px}
+    .real-mic-val{font-size:15px;font-weight:700}
+    /* Slider ganancia */
+    .gain-row{margin-top:4px}
+    .gain-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px}
+    .gain-label{font-size:11px;font-weight:600;letter-spacing:1px;color:var(--text2);text-transform:uppercase}
+    .gain-val{font-size:15px;font-weight:800;color:var(--green)}
+    .slider{width:100%;-webkit-appearance:none;height:4px;border-radius:2px;background:var(--border2);outline:none;cursor:pointer}
+    .slider::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:var(--green);cursor:pointer;transition:transform .1s}
+    .slider::-webkit-slider-thumb:active{transform:scale(1.2)}
+    .meter-bar{height:6px;border-radius:3px;background:var(--border2);overflow:hidden;margin-top:12px}
+    .meter-fill{height:100%;width:0;border-radius:3px;background:var(--green);transition:width .05s linear}
+    .meter-fill.loud{background:var(--amber)}
+    .meter-fill.clip{background:var(--pgm)}
+
+    /* Lista participantes realización */
+    .rpr{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border)}
+    .rpr:last-child{border-bottom:none}
+    .rpr-av{width:38px;height:38px;border-radius:50%;background:var(--surface2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:var(--muted);flex-shrink:0;transition:all .2s}
+    .rpr-av.spk{background:var(--ptt);border-color:var(--ptt);color:#fff}
+    .rpr-info{flex:1;min-width:0}
+    .rpr-name{font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .rpr-state{font-size:10px;color:var(--muted);margin-top:1px}
+    .rpr-state.spk{color:var(--ptt)}
+    .rpr-actions{display:flex;gap:6px;flex-shrink:0}
+    .rpr-btn{width:34px;height:34px;border-radius:9px;border:1px solid var(--border2);background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer;transition:all .15s}
+    .rpr-btn:active{background:var(--surface3)}
+    .rpr-btn.kick{border-color:#4a1a1a}
+    .rpr-btn.kick:active{background:#2a0f0f}
+
+    /* Botón emergencia */
+    .btn-emergency{width:100%;height:64px;border-radius:var(--r);border:2px solid var(--amber);background:rgba(255,149,0,.12);color:var(--amber);font-size:16px;font-weight:800;letter-spacing:1px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:all .15s}
+    .btn-emergency:active{background:rgba(255,149,0,.25)}
+    .btn-emergency.active{background:var(--amber);color:#000;animation:blink .6s infinite}
+
+    /* ═══ MODAL ═══ */
+    .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.8);backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;z-index:1000;padding:24px}
+    .modal-bg.show{display:flex}
+    .modal{background:var(--surface);border:1px solid var(--border2);border-radius:var(--r-lg);padding:28px 24px;max-width:340px;width:100%;text-align:center;animation:popIn .2s ease}
+    .modal-icon{font-size:40px;margin-bottom:16px}
+    .modal-title{font-size:20px;font-weight:800;margin-bottom:10px}
+    .modal-text{font-size:14px;color:var(--text2);line-height:1.6;margin-bottom:24px}
+    .modal-text b{color:var(--text)}
+    .modal-actions{display:flex;flex-direction:column;gap:10px}
+    .modal-input{width:100%;height:50px;border-radius:var(--r);border:1px solid var(--border2);background:var(--bg);color:var(--text);font-size:16px;font-weight:600;text-align:center;padding:0 16px;outline:none;font-family:inherit;letter-spacing:1px}
+    .modal-input:focus{border-color:var(--ptt)}
+    .btn-modal{width:100%;height:50px;border-radius:var(--r);border:none;font-size:15px;font-weight:700;cursor:pointer;transition:opacity .15s}
+    .btn-modal:active{opacity:.85}
+    .btn-modal.primary{background:var(--text);color:var(--bg)}
+    .btn-modal.danger{background:var(--pgm);color:#fff}
+    .btn-modal.ghost{background:transparent;border:1px solid var(--border2);color:var(--text2)}
+
+    /* ═══ EMERGENCIA OVERLAY ═══ */
+    #emergency-overlay{position:fixed;inset:0;z-index:2000;display:none;flex-direction:column;align-items:center;justify-content:center;background:var(--amber);animation:emFlash .5s infinite}
+    #emergency-overlay.show{display:flex}
+    @keyframes emFlash{0%,100%{background:#FF9500}50%{background:#1A1A1A}}
+    .em-text{font-size:clamp(40px,14vw,90px);font-weight:900;letter-spacing:4px;color:#000;margin-bottom:32px;text-shadow:0 2px 10px rgba(0,0,0,.2)}
+    .em-dismiss{height:60px;padding:0 40px;border-radius:100px;border:3px solid #000;background:rgba(0,0,0,.15);color:#000;font-size:18px;font-weight:800;letter-spacing:1px;cursor:pointer}
+
+    /* ═══ CARGANDO AUDIO ═══ */
+    #audio-loading{position:fixed;left:0;right:0;bottom:calc(90px + var(--safe-b));display:none;flex-direction:column;align-items:center;z-index:50;padding:0 24px;pointer-events:none}
+    #audio-loading.show{display:flex}
+    .al-box{background:rgba(20,20,20,.95);backdrop-filter:blur(20px);border:1px solid var(--border2);border-radius:var(--r);padding:14px 20px;display:flex;flex-direction:column;align-items:center;gap:10px;min-width:260px;animation:blink 1.2s infinite}
+    .al-text{font-size:12px;font-weight:700;letter-spacing:2px;color:var(--amber);text-transform:uppercase;display:flex;align-items:center;gap:8px}
+    .al-bar{width:100%;height:4px;border-radius:2px;background:var(--border2);overflow:hidden}
+    .al-fill{height:100%;width:100%;background:var(--amber);transform-origin:left;animation:alCount 20s linear forwards}
+    @keyframes alCount{from{transform:scaleX(1)}to{transform:scaleX(0)}}
+
+    /* ═══ GUÍA ═══ */
+    #screen-guide{padding:0}
+    .guide-scroll{flex:1;overflow-y:auto;padding:20px 18px calc(24px + var(--safe-b))}
+    .guide-step{display:flex;gap:14px;margin-bottom:22px}
+    .gs-num{width:32px;height:32px;border-radius:50%;background:var(--surface3);color:var(--ptt);font-size:14px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+    .gs-body{flex:1}
+    .gs-title{font-size:15px;font-weight:700;margin-bottom:4px}
+    .gs-text{font-size:13px;color:var(--text2);line-height:1.6}
+    .guide-section{font-size:11px;font-weight:700;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin:8px 0 18px}
   </style>
 </head>
 <body>
 <div id="app">
 
-<!-- PERMISOS -->
-<div id="screen-perms" class="screen active">
-  <div class="perms-logo">TALLY REMOTE</div>
-  <div class="perms-title">Acceso necesario</div>
-  <div class="perms-sub">Para el intercom y el flash de aviso necesitamos estos permisos</div>
-  <div class="perms-list">
-    <div class="perm-row">
-      <span class="perm-icon">🎙</span>
-      <span class="perm-name">Micrófono — Intercom</span>
-      <span class="perm-status" id="perm-mic">—</span>
-    </div>
-    <div class="perm-row">
-      <span class="perm-icon">📷</span>
-      <span class="perm-name">Cámara — Flash de aviso</span>
-      <span class="perm-status" id="perm-cam">—</span>
-    </div>
+<!-- BIENVENIDA -->
+<div id="screen-welcome" class="screen active">
+  <div class="w-logo">GBS MULTIMEDIA</div>
+  <div class="w-title">Tally Remote</div>
+  <div class="w-sub">Sistema de tally e intercomunicación para producción en directo</div>
+  <div class="w-actions">
+    <button class="btn-primary" onclick="startApp()">Comenzar</button>
+    <button class="btn-ghost" onclick="show('screen-guide')">Cómo funciona</button>
   </div>
-  <button class="btn-primary" id="perms-btn" onclick="requestPerms()">Conceder acceso</button>
+  <div class="w-credit">Creado por GBS Multimedia · Versión 1.0</div>
+</div>
+
+<!-- GUÍA -->
+<div id="screen-guide" class="screen">
+  <div class="topbar">
+    <div class="btn-back" onclick="show('screen-welcome')"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>Volver</div>
+    <div class="topbar-title">Guía de uso</div>
+  </div>
+  <div class="guide-scroll">
+    <div class="guide-section">Primeros pasos</div>
+    <div class="guide-step"><div class="gs-num">1</div><div class="gs-body"><div class="gs-title">Concede permisos</div><div class="gs-text">Al entrar, acepta el acceso al micrófono (intercom) y la cámara (flash de aviso). Sin estos permisos la app no funciona del todo.</div></div></div>
+    <div class="guide-step"><div class="gs-num">2</div><div class="gs-body"><div class="gs-title">Elige tu modo</div><div class="gs-text">Plató para cámaras de estudio, ENG Directo para hasta 24 entradas, Solo Intercom para técnicos sin tally, o Control de Realización (requiere contraseña).</div></div></div>
+    <div class="guide-step"><div class="gs-num">3</div><div class="gs-body"><div class="gs-title">Selecciona tu cámara</div><div class="gs-text">Toca el número de cámara que te corresponde. La pantalla se convertirá en tu indicador de tally.</div></div></div>
+    <div class="guide-section">Durante la producción</div>
+    <div class="guide-step"><div class="gs-num">4</div><div class="gs-body"><div class="gs-title">Indicador de tally</div><div class="gs-text">EN ANTENA (rojo) significa que estás al aire. EN PREVIO (verde) que eres el siguiente. El flash del móvil se enciende cuando estás en antena.</div></div></div>
+    <div class="guide-step"><div class="gs-num">5</div><div class="gs-body"><div class="gs-title">Hablar por intercom</div><div class="gs-text">Mantén pulsado HABLAR para el modo walkie. Usa CONTINUO para dejar el micro abierto. El botón central de los auriculares también activa el micro.</div></div></div>
+    <div class="guide-step"><div class="gs-num">6</div><div class="gs-body"><div class="gs-title">Aviso de atención</div><div class="gs-text">Si la pantalla parpadea en naranja con ATENCIÓN, Realización está llamando al equipo. Pulsa el botón para descartar el aviso.</div></div></div>
+  </div>
+</div>
+
+<!-- PERMISOS -->
+<div id="screen-perms" class="screen">
+  <div class="p-title">Acceso necesario</div>
+  <div class="p-sub">Para el intercom y el flash de aviso necesitamos estos permisos</div>
+  <div class="p-list">
+    <div class="p-row"><span class="p-icon">🎙</span><span class="p-name">Micrófono — Intercom</span><span class="p-check" id="perm-mic">—</span></div>
+    <div class="p-row"><span class="p-icon">📷</span><span class="p-name">Cámara — Flash de aviso</span><span class="p-check" id="perm-cam">—</span></div>
+  </div>
+  <button class="btn-primary" style="max-width:320px" id="perms-btn" onclick="requestPerms()">Conceder acceso</button>
 </div>
 
 <!-- MENÚ -->
 <div id="screen-menu" class="screen">
-  <div class="menu-inner">
-    <div class="menu-wordmark">TALLY REMOTE</div>
-    <div class="menu-title">¿En qué modo<br>trabajas hoy?</div>
+  <div class="menu-scroll">
+    <div class="menu-brand">GBS MULTIMEDIA</div>
+    <div class="menu-h">¿En qué modo<br>trabajas hoy?</div>
     <div class="menu-sub">Selecciona tu rol para esta producción</div>
     <div class="menu-cards">
-      <div class="menu-card" onclick="enterMode('plato')">
-        <div class="card-eyebrow">MODO 01</div>
-        <div class="card-title">Plató</div>
-        <div class="card-desc">Hasta 6 cámaras · Flash en antena · Previo visible · Intercom</div>
+      <div class="mcard" onclick="enterMode('plato')">
+        <div class="mcard-icon">📺</div>
+        <div class="mcard-body"><div class="mcard-eyebrow">MODO 01</div><div class="mcard-title">Plató</div><div class="mcard-desc">Hasta 6 cámaras · Flash · Previo · Intercom</div></div>
       </div>
-      <div class="menu-card" onclick="enterMode('eng')">
-        <div class="card-eyebrow">MODO 02</div>
-        <div class="card-title">ENG Directo</div>
-        <div class="card-desc">Hasta 24 entradas · Flash en directo · Intercom</div>
+      <div class="mcard" onclick="enterMode('eng')">
+        <div class="mcard-icon">🎥</div>
+        <div class="mcard-body"><div class="mcard-eyebrow">MODO 02</div><div class="mcard-title">ENG Directo</div><div class="mcard-desc">Hasta 24 entradas · Flash · Intercom</div></div>
       </div>
-      <div class="menu-card" onclick="enterIntercomAlone()">
-        <div class="card-eyebrow">MODO 03</div>
-        <div class="card-title">Solo Intercom</div>
-        <div class="card-desc">Realización, sonido o dirección sin tally</div>
+      <div class="mcard" onclick="enterIntercomAlone()">
+        <div class="mcard-icon">🎙️</div>
+        <div class="mcard-body"><div class="mcard-eyebrow">MODO 03</div><div class="mcard-title">Solo Intercom</div><div class="mcard-desc">Sonido, técnicos o dirección sin tally</div></div>
       </div>
-      <div class="menu-card" onclick="enterRealizacion()" style="border-color:#1a3a1a">
-        <div class="card-eyebrow" style="color:#00C853">MODO 04</div>
-        <div class="card-title">Control de Realización</div>
-        <div class="card-desc">Micrófono siempre abierto · Puerta de ruido ajustable · Para el PC del CrossNET</div>
+      <div class="mcard super" onclick="askRealizacionPassword()">
+        <div class="mcard-icon">🛡️</div>
+        <div class="mcard-body"><div class="mcard-eyebrow">MODO 04 · SUPERUSUARIO</div><div class="mcard-title">Control de Realización</div><div class="mcard-desc">Requiere contraseña · Gestión del equipo</div></div>
       </div>
     </div>
-    <div class="menu-conn">
-      <span class="dot" id="menu-dot"></span>
-      <span id="menu-conn">Conectando...</span>
-    </div>
+    <div class="menu-conn"><span class="dot" id="menu-dot"></span><span id="menu-conn">Conectando...</span></div>
   </div>
 </div>
 
 <!-- SELECCIÓN -->
 <div id="screen-select" class="screen">
-  <div class="sel-header">
-    <div class="nav-back" onclick="goMenu()">
-      <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
-      Menú
-    </div>
-    <div class="sel-title" id="sel-title">Cámara</div>
+  <div class="topbar">
+    <div class="btn-back" onclick="goMenu()"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>Menú</div>
+    <div class="topbar-title" id="sel-title">Cámara</div>
   </div>
   <div class="sel-status" id="sel-status"></div>
   <div class="grid" id="cam-grid"></div>
@@ -372,266 +344,352 @@
 
 <!-- TALLY -->
 <div id="screen-tally" class="screen">
-  <div class="tally-left" style="display:contents">
-    <div class="tally-topbar">
-      <div class="nav-back" onclick="goSelect()">
-        <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
-      </div>
-      <div class="topbar-cam" id="topbar-cam"></div>
-      <div class="topbar-ic" id="topbar-ic">IC —</div>
+  <div class="tally-main-col" style="display:contents">
+    <div class="tally-top">
+      <div class="btn-back" onclick="goSelect()"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>Cámaras</div>
+      <div class="topbar-title" id="tally-camname"></div>
+      <div class="tally-ic" id="tally-ic">IC —</div>
     </div>
     <div class="tally-body">
-      <div class="tally-eyebrow" id="tally-eyebrow">ESTADO</div>
-      <div class="tally-state" id="tally-state">LIBRE</div>
+      <canvas id="tally-canvas"></canvas>
+      <div class="tally-overlay">
+        <div class="tally-eyebrow" id="tally-eyebrow">ESTADO</div>
+        <div class="tally-state" id="tally-state">LIBRE</div>
+      </div>
     </div>
-    <div class="speakers-area" id="speakers-area"></div>
+    <div class="speaker-zone" id="speaker-zone"></div>
     <div class="tally-prev" id="tally-prev" style="display:none">
-      <div class="prev-eyebrow">En previo</div>
-      <div class="prev-name" id="prev-name">—</div>
+      <div class="tp-label">En previo</div>
+      <div class="tp-name" id="tp-name">—</div>
     </div>
   </div>
   <div class="ic-bar">
-    <button class="ptt-btn" id="ptt-tally"
-      ontouchstart="pttPress(event)" ontouchend="pttRelease(event)"
-      onmousedown="pttPress(event)" onmouseup="pttRelease(event)" onmouseleave="pttRelease(event)">
-      <span class="ptt-dot"></span>HABLAR
-    </button>
-    <div class="topbar-ic" id="ic-badge" style="min-width:44px;text-align:center">—</div>
+    <div class="ic-mic-state" id="mic-state"><span class="ms-dot"></span><span id="mic-state-txt">MICRÓFONO CERRADO</span></div>
+    <div class="ic-btns">
+      <button class="ptt" id="ptt-hold"
+        ontouchstart="holdStart(event)" ontouchend="holdStop(event)"
+        onmousedown="holdStart(event)" onmouseup="holdStop(event)" onmouseleave="holdStop(event)">
+        <span class="ptt-ico">🎙</span><span>HABLAR</span>
+      </button>
+      <button class="ptt" id="ptt-lock" onclick="toggleLock()">
+        <span class="ptt-ico">🔒</span><span>CONTINUO</span>
+      </button>
+    </div>
   </div>
 </div>
 
 <!-- INTERCOM STANDALONE -->
 <div id="screen-intercom" class="screen">
-  <div class="ic-topbar">
-    <div class="nav-back" onclick="goMenu()">
-      <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
-    </div>
-    <div class="ic-topbar-title">Intercom</div>
-    <div class="ic-badge" id="ic-room-badge">—</div>
+  <div class="topbar">
+    <div class="btn-back" onclick="goMenu()"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>Menú</div>
+    <div class="topbar-title">Intercom</div>
+    <div class="topbar-right" id="ic-room-badge">—</div>
   </div>
-  <div class="participants" id="participants"></div>
-  <div class="ptt-wrap">
-    <button class="ptt-big" id="ptt-big"
-      ontouchstart="pttPress(event)" ontouchend="pttRelease(event)"
-      onmousedown="pttPress(event)" onmouseup="pttRelease(event)" onmouseleave="pttRelease(event)">
-      <span class="ptt-dot"></span>MANTÉN PARA HABLAR
-    </button>
-    <div class="headset-note" id="headset-note">Auriculares: botón central para hablar</div>
+  <div class="ic-list" id="ic-list"></div>
+  <div class="ic-foot">
+    <div class="ic-mic-state" id="mic-state2" style="margin-bottom:8px"><span class="ms-dot"></span><span id="mic-state2-txt">MICRÓFONO CERRADO</span></div>
+    <div class="ic-btns">
+      <button class="ptt" id="ptt-hold2"
+        ontouchstart="holdStart(event)" ontouchend="holdStop(event)"
+        onmousedown="holdStart(event)" onmouseup="holdStop(event)" onmouseleave="holdStop(event)">
+        <span class="ptt-ico">🎙</span><span>HABLAR</span>
+      </button>
+      <button class="ptt" id="ptt-lock2" onclick="toggleLock()">
+        <span class="ptt-ico">🔒</span><span>CONTINUO</span>
+      </button>
+    </div>
   </div>
 </div>
 
-<!-- CONTROL REALIZACIÓN -->
+<!-- REALIZACIÓN -->
 <div id="screen-realizacion" class="screen">
-  <div class="real-topbar">
-    <div class="nav-back" onclick="goMenu()">
-      <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
-    </div>
-    <div class="real-title">Control de Realización</div>
-    <div class="real-status-dot" id="real-dot"></div>
+  <div class="topbar">
+    <div class="btn-back" onclick="goMenu()"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>Menú</div>
+    <div class="topbar-title">Control de Realización</div>
+    <div class="topbar-right on" id="real-conn">●</div>
   </div>
-  <div class="real-body">
-    <div class="real-mic-indicator" id="real-mic-indicator">
-      <span class="real-mic-icon">🎙</span>
-      <span class="real-mic-label" id="real-mic-label">ESCUCHANDO</span>
-    </div>
-    <div class="real-meter">
-      <div class="real-meter-label">Nivel de entrada</div>
-      <div class="real-meter-bar"><div class="real-meter-fill" id="real-meter-fill"></div></div>
-    </div>
-    <div class="real-gate-section">
-      <div class="real-gate-label">
-        Puerta de ruido
-        <span class="real-gate-value" id="real-gate-value">–40 dB</span>
+  <div class="real-scroll">
+    <!-- Micrófono + ganancia -->
+    <div class="real-card">
+      <div class="real-card-h">🎙 Micrófono de realización</div>
+      <div class="real-mic-box">
+        <div class="real-mic-circ on" id="real-mic-circ">🎙</div>
+        <div class="real-mic-txt">
+          <div class="real-mic-label">Estado</div>
+          <div class="real-mic-val" id="real-mic-val">Micrófono abierto</div>
+        </div>
       </div>
-      <input type="range" class="real-gate-slider" id="real-gate-slider"
-        min="-60" max="0" value="-40" step="1"
-        oninput="updateGate(this.value)"/>
+      <div class="gain-row">
+        <div class="gain-head" style="margin-top:18px">
+          <span class="gain-label">Ganancia de entrada</span>
+          <span class="gain-val" id="gain-val">100%</span>
+        </div>
+        <input type="range" class="slider" id="gain-slider" min="0" max="300" value="100" step="5" oninput="updateGain(this.value)"/>
+        <div class="meter-bar"><div class="meter-fill" id="real-meter"></div></div>
+      </div>
     </div>
-    <div class="real-participants">
-      <div class="real-part-label">En sala</div>
-      <div id="real-participants-list"></div>
+
+    <!-- Emergencia -->
+    <div class="real-card">
+      <div class="real-card-h">🚨 Aviso de emergencia</div>
+      <button class="btn-emergency" id="btn-emergency" onclick="toggleEmergency()">
+        <span>⚠️</span><span id="emergency-label">ACTIVAR AVISO</span>
+      </button>
+      <div style="font-size:11px;color:var(--muted);margin-top:10px;line-height:1.5">Hace parpadear en naranja todas las pantallas con un aviso de ATENCIÓN. Útil para llamar al equipo en pausas publicitarias.</div>
+    </div>
+
+    <!-- Participantes -->
+    <div class="real-card">
+      <div class="real-card-h">👥 Equipo conectado</div>
+      <div id="real-participants"></div>
     </div>
   </div>
 </div>
 
+</div>
+
+<!-- EMERGENCIA OVERLAY -->
+<div id="emergency-overlay">
+  <div class="em-text">⚠️ ATENCIÓN</div>
+  <button class="em-dismiss" onclick="dismissEmergency()">DESCARTAR</button>
+</div>
+
+<!-- CARGANDO AUDIO -->
+<div id="audio-loading">
+  <div class="al-box">
+    <div class="al-text"><span>⏳</span><span>Cargando audio · <span id="al-count">20</span>s</span></div>
+    <div class="al-bar"><div class="al-fill"></div></div>
+  </div>
+</div>
+
+<!-- MODAL GENÉRICO -->
+<div class="modal-bg" id="modal-bg">
+  <div class="modal">
+    <div class="modal-icon" id="modal-icon">⚠️</div>
+    <div class="modal-title" id="modal-title">Título</div>
+    <div class="modal-text" id="modal-text">Texto</div>
+    <input type="text" class="modal-input" id="modal-input" style="display:none;margin-bottom:16px"/>
+    <div class="modal-actions">
+      <button class="btn-modal primary" id="modal-ok">Aceptar</button>
+      <button class="btn-modal ghost" id="modal-cancel" onclick="closeModal()">Cancelar</button>
+    </div>
+  </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/livekit-client@2.5.6/dist/livekit-client.umd.min.js"></script>
 <script src="https://cdn.socket.io/4.7.4/socket.io.min.js"></script>
 <script>
-const CAMS_PLATO = Array.from({length:6},  (_,i)=>({n:i+1, label:`Cámara ${i+1}`, input:`input${i+1}`}));
-const CAMS_ENG   = Array.from({length:24}, (_,i)=>({n:i+1, label:`CAM ${i+1}`,    input:`input${i+1}`}));
-const STATES = {
-  pgm:     {bg:'#CC0000',st:'EN ANTENA',ey:'PROGRAMA',  tc:'#fff'},
-  prev:    {bg:'#007A00',st:'EN PREVIO', ey:'PREVIO',    tc:'#fff'},
-  inactive:{bg:'#0A0A0A',st:'LIBRE',    ey:'ESTADO',    tc:'#2A2A2A'},
-  offline: {bg:'#0A0A0A',st:'SIN SEÑAL',ey:'DESCONECTADO',tc:'#1A1A1A'},
-};
+// ═══ CONFIG ═══
+const REAL_PASSWORD='navarratv';
+const CAMS_PLATO=Array.from({length:6},(_,i)=>({n:i+1,base:`Cámara ${i+1}`,input:`input${i+1}`}));
+const CAMS_ENG  =Array.from({length:24},(_,i)=>({n:i+1,base:`CAM ${i+1}`,input:`input${i+1}`}));
 
+// ═══ ESTADO ═══
 let mode=null,cameras=[],selectedCam=null;
-let tallyInputs={},bridgeOn=false,prevKey=null;
+let tallyInputs={},bridgeOn=false,prevKey=null,customNames={};
 let torchTrack=null,torchOn=false;
-let lkRoom=null,localTrack=null,myId=null;
-let activeSpeakers=new Set(),pttActive=false,headsetOn=false;
+let lkRoom=null,localTrack=null,myId=null,baseId=null;
+let activeSpeakers=new Set();
+let micOpen=false,lockMode=false,headsetOn=false;
+let isReal=false,realGain=100,gainNode=null,audioCtx=null,analyser=null,micStream=null;
 
-// ── ORIENTACIÓN ──
-function fixOrientation(){
-  const t=document.getElementById('screen-tally');
-  const left=t.querySelector('.tally-left');
-  if(!left)return;
-  if(window.innerWidth>window.innerHeight){
-    t.style.flexDirection='row';
-    left.style.cssText='display:flex;flex-direction:column;flex:1;min-width:0';
+// ═══ NAVEGACIÓN ═══
+function show(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('active',s.id===id));
+  if(id==='screen-tally'){setTimeout(()=>{fixTallyLayout();drawTally();},50);}
+}
+function startApp(){
+  if(localStorage.getItem('permsGranted')==='1'){
+    navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}}).then(s=>{torchTrack=s.getVideoTracks()[0];}).catch(()=>{});
+    show('screen-menu');
   }else{
-    t.style.flexDirection='';
-    left.style.cssText='display:contents';
+    show('screen-perms');
   }
 }
-window.addEventListener('resize',fixOrientation);
-window.addEventListener('orientationchange',()=>setTimeout(fixOrientation,100));
+function goMenu(){setTorch(false);leaveRoom();stopRealAudio();selectedCam=null;mode=null;isReal=false;hideAudioLoading();show('screen-menu');}
+function goSelect(){setTorch(false);selectedCam=null;buildGrid();show('screen-select');}
 
-// ── PERMISOS ──
+// ═══ PERMISOS ═══
 async function requestPerms(){
   const btn=document.getElementById('perms-btn');
-  btn.textContent='Solicitando acceso...';btn.disabled=true;
-  try{
-    const s=await navigator.mediaDevices.getUserMedia({audio:true});
-    s.getTracks().forEach(t=>t.stop());
-    document.getElementById('perm-mic').textContent='✓';
-  }catch(e){document.getElementById('perm-mic').textContent='✕';}
-  try{
-    const s=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}});
-    torchTrack=s.getVideoTracks()[0];
-    document.getElementById('perm-cam').textContent='✓';
-  }catch(e){document.getElementById('perm-cam').textContent='✕';}
+  btn.textContent='Solicitando...';btn.disabled=true;
+  try{const s=await navigator.mediaDevices.getUserMedia({audio:true});s.getTracks().forEach(t=>t.stop());document.getElementById('perm-mic').textContent='✓';}catch(e){document.getElementById('perm-mic').textContent='✕';}
+  try{const s=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}});torchTrack=s.getVideoTracks()[0];document.getElementById('perm-cam').textContent='✓';}catch(e){document.getElementById('perm-cam').textContent='✕';}
   localStorage.setItem('permsGranted','1');
   setTimeout(()=>show('screen-menu'),500);
 }
 
-// ── TORCH ──
+// ═══ TORCH ═══
 async function setTorch(on){
   if(torchOn===on)return;
-  if(!torchTrack||torchTrack.readyState==='ended'){
-    try{const s=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}});torchTrack=s.getVideoTracks()[0];}catch(e){return;}
-  }
+  if(!torchTrack||torchTrack.readyState==='ended'){try{const s=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}});torchTrack=s.getVideoTracks()[0];}catch(e){return;}}
   try{await torchTrack.applyConstraints({advanced:[{torch:on}]});torchOn=on;}catch(e){}
 }
 
-// ── NAV ──
-function show(id){
-  document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('active',s.id===id));
-  if(id==='screen-tally')setTimeout(fixOrientation,50);
-}
-function goMenu(){setTorch(false);leaveRoom();selectedCam=null;mode=null;show('screen-menu');}
-function goSelect(){setTorch(false);selectedCam=null;buildGrid();show('screen-select');}
-function enterMode(m){
-  mode=m;cameras=m==='plato'?CAMS_PLATO:CAMS_ENG;
-  document.getElementById('sel-title').textContent=m==='plato'?'Cámara':'Entrada';
-  document.getElementById('tally-prev').style.display=m==='plato'?'block':'none';
-  buildGrid();show('screen-select');
-  localStorage.setItem('tallyMode',m);
-}
-function enterIntercomAlone(){
-  const n=prompt('Tu nombre o rol (ej: Realización, Sonido...)');
-  if(!n)return;
-  myId=n.trim();show('screen-intercom');joinIntercom(myId);
+// ═══ NOMBRES ═══
+function nameFor(cam){
+  const custom=customNames[cam.input];
+  return custom ? `${custom} ${cam.base.toUpperCase()}` : cam.base;
 }
 
-// ── GRID ──
+// ═══ MODOS ═══
+function enterMode(m){
+  mode=m;cameras=m==='plato'?CAMS_PLATO:CAMS_ENG;
+  document.getElementById('sel-title').textContent=m==='plato'?'Selecciona cámara':'Selecciona entrada';
+  document.getElementById('tally-prev').style.display=m==='plato'?'block':'none';
+  buildGrid();show('screen-select');
+}
+function enterIntercomAlone(){
+  openModal({icon:'🎙️',title:'Tu nombre',text:'¿Cómo te identificas en el intercom?',input:true,inputPlaceholder:'Sonido, Dirección...',okText:'Entrar',onOk:(val)=>{
+    if(!val)return;
+    myId=val.slice(0,10);baseId=myId;closeModal();show('screen-intercom');showAudioLoading();joinIntercom(myId);
+  }});
+}
+
+// ═══ REALIZACIÓN: contraseña ═══
+function askRealizacionPassword(){
+  openModal({icon:'🛡️',title:'Control de Realización',text:'Introduce la contraseña de acceso',input:true,inputType:'password',inputPlaceholder:'Contraseña',okText:'Acceder',onOk:(val)=>{
+    if(val===REAL_PASSWORD){closeModal();enterRealizacion();}
+    else{document.getElementById('modal-input').value='';document.getElementById('modal-input').placeholder='Contraseña incorrecta';document.getElementById('modal-input').style.borderColor='var(--pgm)';}
+  }});
+}
+
+// ═══ GRID ═══
 function buildGrid(){
   const grid=document.getElementById('cam-grid');
   grid.className='grid '+(mode==='eng'?'g3':'g2');
   grid.innerHTML='';
   const st=document.getElementById('sel-status');
   st.textContent=bridgeOn?'● Estudio conectado':'● Estudio desconectado';
-  st.style.color=bridgeOn?'#00C853':'#4A4A4A';
+  st.style.color=bridgeOn?'var(--green)':'var(--muted)';
   cameras.forEach(cam=>{
     const state=tallyInputs[cam.input]||'inactive';
+    const custom=customNames[cam.input];
     const el=document.createElement('div');
     el.className='cam-card '+(state==='pgm'?'pgm':state==='prev'?'prev':'');
     el.id='cc-'+cam.input;
-    el.innerHTML=`<span class="cam-num">CAM</span><span class="cam-label">${cam.n}</span><span class="cam-state" id="cs-${cam.input}">${state==='pgm'?'PGM':state==='prev'?'PRV':''}</span>`;
+    el.innerHTML=`<span class="cam-tag">CAM</span><span class="cam-n">${cam.n}</span>${custom?`<span class="cam-custom">${custom}</span>`:''}<span class="cam-badge" id="cb-${cam.input}">${state==='pgm'?'PGM':state==='prev'?'PRV':''}</span>`;
     el.addEventListener('click',()=>selectCam(cam));
     grid.appendChild(el);
   });
 }
 function updateGrid(){
   cameras.forEach(cam=>{
-    const el=document.getElementById('cc-'+cam.input);
-    const cs=document.getElementById('cs-'+cam.input);
-    if(!el)return;
+    const el=document.getElementById('cc-'+cam.input);if(!el)return;
     const state=tallyInputs[cam.input]||'inactive';
     el.className='cam-card '+(state==='pgm'?'pgm':state==='prev'?'prev':'');
-    cs.textContent=state==='pgm'?'PGM':state==='prev'?'PRV':'';
+    const cb=document.getElementById('cb-'+cam.input);if(cb)cb.textContent=state==='pgm'?'PGM':state==='prev'?'PRV':'';
   });
 }
 
-// ── SELECCIONAR ──
+// ═══ SELECCIONAR CÁMARA ═══
 async function selectCam(cam){
-  selectedCam=cam;myId=cam.label;
-  localStorage.setItem('selectedCam',cam.input);
-  document.getElementById('topbar-cam').textContent=cam.label;
+  selectedCam=cam;baseId=cam.base;myId=nameFor(cam);
+  document.getElementById('tally-camname').textContent=nameFor(cam);
   show('screen-tally');updateTally();
   try{if('wakeLock'in navigator)await navigator.wakeLock.request('screen');}catch(e){}
-  joinIntercom(cam.label);
+  showAudioLoading();
+  joinIntercom(myId);
   setupMediaSession();
 }
 
-// ── TALLY ──
+// ═══ TALLY: dibujo con canvas (ahorro energía) ═══
+let canvasCtx=null,tallyAnimId=null;
+function fixTallyLayout(){
+  const t=document.getElementById('screen-tally');
+  const col=t.querySelector('.tally-main-col');
+  if(!col)return;
+  if(window.innerWidth>window.innerHeight){t.style.flexDirection='row';col.style.cssText='display:flex;flex-direction:column;flex:1;min-width:0';}
+  else{t.style.flexDirection='';col.style.cssText='display:contents';}
+}
+function drawTally(){
+  const canvas=document.getElementById('tally-canvas');
+  if(!canvas)return;
+  const body=canvas.parentElement;
+  const dpr=window.devicePixelRatio||1;
+  const w=body.clientWidth,h=body.clientHeight;
+  canvas.width=w*dpr;canvas.height=h*dpr;
+  canvasCtx=canvas.getContext('2d');
+  canvasCtx.scale(dpr,dpr);
+  renderTallyPattern(w,h);
+}
+function renderTallyPattern(w,h){
+  if(!canvasCtx)return;
+  const key=!bridgeOn?'offline':(selectedCam?(tallyInputs[selectedCam.input]||'inactive'):'inactive');
+  canvasCtx.clearRect(0,0,w,h);
+  // Fondo negro siempre (ahorro energía)
+  canvasCtx.fillStyle='#0A0A0A';
+  canvasCtx.fillRect(0,0,w,h);
+  if(key==='pgm'||key==='prev'){
+    // Patrón de círculos en vez de fondo completo
+    const color=key==='pgm'?'#E50914':'#00B341';
+    const spacing=46;const radius=7;
+    canvasCtx.fillStyle=color;
+    for(let y=spacing/2;y<h;y+=spacing){
+      for(let x=spacing/2;x<w;x+=spacing){
+        canvasCtx.beginPath();
+        canvasCtx.arc(x,y,radius,0,Math.PI*2);
+        canvasCtx.fill();
+      }
+    }
+  }
+}
+window.addEventListener('resize',()=>{if(document.getElementById('screen-tally').classList.contains('active')){fixTallyLayout();drawTally();}});
+window.addEventListener('orientationchange',()=>setTimeout(()=>{fixTallyLayout();drawTally();},150));
+
 function updateTally(){
   if(!selectedCam)return;
   const key=!bridgeOn?'offline':(tallyInputs[selectedCam.input]||'inactive');
-  const s=STATES[key];
-  document.getElementById('screen-tally').style.background=s.bg;
-  document.getElementById('tally-state').style.color=s.tc;
+  const cfg={pgm:{st:'EN ANTENA',ey:'PROGRAMA',c:'#fff'},prev:{st:'EN PREVIO',ey:'PREVIO',c:'#fff'},inactive:{st:'LIBRE',ey:'EN ESPERA',c:'#3A3A3A'},offline:{st:'SIN SEÑAL',ey:'DESCONECTADO',c:'#222'}};
+  const s=cfg[key];
+  document.getElementById('tally-state').style.color=s.c;
   document.getElementById('tally-state').textContent=s.st;
-  document.getElementById('tally-eyebrow').style.color=key==='pgm'?'rgba(255,255,255,.4)':key==='prev'?'rgba(255,255,255,.4)':'#2A2A2A';
   document.getElementById('tally-eyebrow').textContent=s.ey;
+  document.getElementById('tally-eyebrow').style.color=(key==='pgm'||key==='prev')?'rgba(255,255,255,.55)':'var(--muted)';
   setTorch(key==='pgm');
   if(key==='pgm'&&prevKey!=='pgm')navigator.vibrate&&navigator.vibrate([80,40,80]);
   prevKey=key;
+  if(document.getElementById('screen-tally').classList.contains('active'))drawTally();
   if(mode==='plato'){
     const pc=CAMS_PLATO.find(c=>(tallyInputs[c.input]||'inactive')==='prev');
-    document.getElementById('prev-name').textContent=pc?pc.label:'—';
+    document.getElementById('tp-name').textContent=pc?nameFor(pc):'—';
   }
 }
 
-// ── SPEAKERS ──
+// ═══ SPEAKER GRANDE ═══
 function updateSpeakers(){
-  const area=document.getElementById('speakers-area');
-  if(!area)return;
-  area.innerHTML='';
-  [...activeSpeakers].filter(id=>id!==myId).forEach(id=>{
-    const pill=document.createElement('div');
-    pill.className='speaker-pill';
-    pill.textContent=id;
-    area.appendChild(pill);
-  });
+  const zone=document.getElementById('speaker-zone');
+  if(!zone)return;
+  const others=[...activeSpeakers].filter(id=>id!==myId);
+  zone.innerHTML='';
+  if(others.length===0)return;
+  // Mostrar el primero en grande
+  const div=document.createElement('div');
+  div.className='speaker-big';
+  div.innerHTML=`<span class="sb-dot"></span><span class="sb-name">${others[0]}${others.length>1?` +${others.length-1}`:''}</span>`;
+  zone.appendChild(div);
 }
 
-// ── LIVEKIT ──
+// ═══ LIVEKIT ═══
 async function joinIntercom(identity){
   if(lkRoom)await leaveRoom();
   try{
     const res=await fetch(`/livekit-token?room=intercom&identity=${encodeURIComponent(identity)}`);
     const data=await res.json();
-    lkRoom=new LivekitClient.Room({
-      audioCaptureDefaults:{echoCancellation:true,noiseSuppression:true,autoGainControl:true},
-      adaptiveStream:true,
-    });
-    lkRoom.on(LivekitClient.RoomEvent.ParticipantConnected,    updateParticipants);
-    lkRoom.on(LivekitClient.RoomEvent.ParticipantDisconnected, updateParticipants);
-    lkRoom.on(LivekitClient.RoomEvent.TrackSubscribed,         t=>{if(t.kind===LivekitClient.Track.Kind.Audio){const e=t.attach();e.id='aud-'+t.sid;document.body.appendChild(e);}});
-    lkRoom.on(LivekitClient.RoomEvent.TrackUnsubscribed,       t=>{const e=document.getElementById('aud-'+t.sid);if(e)e.remove();});
-    lkRoom.on(LivekitClient.RoomEvent.ActiveSpeakersChanged,   spk=>{activeSpeakers=new Set(spk.map(s=>s.identity));updateSpeakers();updateParticipants();});
-    lkRoom.on(LivekitClient.RoomEvent.Disconnected,            ()=>setIcStatus(false));
+    lkRoom=new LivekitClient.Room({audioCaptureDefaults:{echoCancellation:true,noiseSuppression:true,autoGainControl:true},adaptiveStream:true});
+    lkRoom.on(LivekitClient.RoomEvent.ParticipantConnected,refreshParticipants);
+    lkRoom.on(LivekitClient.RoomEvent.ParticipantDisconnected,refreshParticipants);
+    lkRoom.on(LivekitClient.RoomEvent.TrackSubscribed,t=>{if(t.kind===LivekitClient.Track.Kind.Audio){const e=t.attach();e.id='aud-'+t.sid;document.body.appendChild(e);}});
+    lkRoom.on(LivekitClient.RoomEvent.TrackUnsubscribed,t=>{const e=document.getElementById('aud-'+t.sid);if(e)e.remove();});
+    lkRoom.on(LivekitClient.RoomEvent.ActiveSpeakersChanged,spk=>{activeSpeakers=new Set(spk.map(s=>s.identity));updateSpeakers();refreshParticipants();});
+    lkRoom.on(LivekitClient.RoomEvent.Disconnected,()=>setIcStatus(false));
     await lkRoom.connect(data.url,data.token);
     localTrack=await LivekitClient.createLocalAudioTrack({echoCancellation:true,noiseSuppression:true,autoGainControl:true});
     await lkRoom.localParticipant.publishTrack(localTrack,{muted:true});
     await localTrack.mute();
-    pttActive=false;
+    micOpen=false;lockMode=false;updateMicUI();
     setIcStatus(true,identity);
-    updateParticipants();
+    refreshParticipants();
   }catch(e){console.error('LK:',e);setIcStatus(false);}
 }
 async function leaveRoom(){
@@ -640,223 +698,245 @@ async function leaveRoom(){
   setIcStatus(false);
 }
 function setIcStatus(on,identity){
-  const b=document.getElementById('ic-badge');
-  const t=document.getElementById('topbar-ic');
-  const rb=document.getElementById('ic-room-badge');
-  if(b){b.className=(on?'topbar-ic on':'topbar-ic');b.textContent=on?'IC ●':'IC —';}
-  if(t){t.className=(on?'topbar-ic on':'topbar-ic');t.textContent=on?'IC ●':'IC —';}
-  if(rb){rb.className=(on?'ic-badge on':'ic-badge');rb.textContent=on?`● ${identity}`:'Desconectado';}
+  ['tally-ic'].forEach(id=>{const e=document.getElementById(id);if(e){e.className='tally-ic'+(on?' on':'');e.textContent=on?'IC ●':'IC —';}});
+  const rb=document.getElementById('ic-room-badge');if(rb){rb.className='topbar-right'+(on?' on':'');rb.textContent=on?`● ${identity}`:'—';}
 }
-function updateParticipants(){
-  const list=document.getElementById('participants');
-  if(!list||!lkRoom)return;
-  list.innerHTML='';
-  [lkRoom.localParticipant,...lkRoom.remoteParticipants.values()].forEach(p=>{
-    const spk=activeSpeakers.has(p.identity);
-    const row=document.createElement('div');
-    row.className='p-row';
-    row.innerHTML=`<div class="p-avatar ${spk?'speaking':''}">${p.identity[0].toUpperCase()}</div><div class="p-info"><div class="p-name">${p.identity}${p.isLocal?' (tú)':''}</div><div class="p-state ${spk?'speaking':''}">${spk?'Hablando':'En escucha'}</div></div>`;
-    list.appendChild(row);
-  });
+function refreshParticipants(){
+  if(!lkRoom)return;
+  const all=[lkRoom.localParticipant,...lkRoom.remoteParticipants.values()];
+  // Intercom standalone
+  const list=document.getElementById('ic-list');
+  if(list&&document.getElementById('screen-intercom').classList.contains('active')){
+    list.innerHTML='';
+    all.forEach(p=>{const spk=activeSpeakers.has(p.identity);const r=document.createElement('div');r.className='pr';r.innerHTML=`<div class="pr-av ${spk?'spk':''}">${p.identity[0].toUpperCase()}</div><div class="pr-info"><div class="pr-name">${p.identity}${p.isLocal?' (tú)':''}</div><div class="pr-state ${spk?'spk':''}">${spk?'Hablando':'En escucha'}</div></div>`;list.appendChild(r);});
+  }
+  // Realización
+  if(isReal)renderRealParticipants(all);
 }
 
-// ── PTT ──
-async function pttPress(e){
-  e&&e.preventDefault();
-  if(pttActive)return;
-  pttActive=true;
-  if(localTrack)await localTrack.unmute();
-  document.querySelectorAll('.ptt-btn,.ptt-big').forEach(b=>{
-    b.classList.add('active');
-    const txt=b.querySelector('span+span')||b;
-    if(b.classList.contains('ptt-big'))b.childNodes[b.childNodes.length-1].textContent=' HABLANDO...';
-    else b.childNodes[b.childNodes.length-1].textContent='HABLANDO...';
+// ═══ MIC: 3 modos ═══
+function updateMicUI(){
+  const open=micOpen||lockMode;
+  document.querySelectorAll('#mic-state,#mic-state2').forEach(el=>{
+    el.className='ic-mic-state'+(open?' open':'');
   });
-}
-async function pttRelease(e){
-  e&&e.preventDefault();
-  if(!pttActive)return;
-  pttActive=false;
-  if(localTrack)await localTrack.mute();
-  document.querySelectorAll('.ptt-btn,.ptt-big').forEach(b=>{
-    b.classList.remove('active');
-    if(b.classList.contains('ptt-big'))b.childNodes[b.childNodes.length-1].textContent=' MANTÉN PARA HABLAR';
-    else b.childNodes[b.childNodes.length-1].textContent='HABLAR';
+  document.querySelectorAll('#mic-state-txt,#mic-state2-txt').forEach(el=>{
+    el.textContent=open?(lockMode?'MICRÓFONO ABIERTO (CONTINUO)':'MICRÓFONO ABIERTO'):'MICRÓFONO CERRADO';
   });
+  document.querySelectorAll('#ptt-hold,#ptt-hold2').forEach(b=>b.classList.toggle('active',micOpen&&!lockMode));
+  document.querySelectorAll('#ptt-lock,#ptt-lock2').forEach(b=>b.classList.toggle('locked',lockMode));
 }
-document.addEventListener('keydown',e=>{if(e.code==='Space'&&!pttActive){e.preventDefault();pttPress();}});
-document.addEventListener('keyup',  e=>{if(e.code==='Space'){e.preventDefault();pttRelease();}});
+async function setMic(on){
+  if(!localTrack)return;
+  if(on)await localTrack.unmute();else await localTrack.mute();
+}
+// Hold (walkie)
+async function holdStart(e){e&&e.preventDefault();if(lockMode)return;micOpen=true;await setMic(true);updateMicUI();}
+async function holdStop(e){e&&e.preventDefault();if(lockMode)return;micOpen=false;await setMic(false);updateMicUI();}
+// Lock (continuo)
+async function toggleLock(){lockMode=!lockMode;micOpen=false;await setMic(lockMode);updateMicUI();}
 
-// ── MEDIA SESSION (botón auriculares) ──
+document.addEventListener('keydown',e=>{if(e.code==='Space'&&!micOpen&&!lockMode){e.preventDefault();holdStart();}});
+document.addEventListener('keyup',e=>{if(e.code==='Space'&&!lockMode){e.preventDefault();holdStop();}});
+
+// ═══ MEDIA SESSION (auriculares = toggle como antes) ═══
 function setupMediaSession(){
   if(!('mediaSession'in navigator))return;
   let sa=document.getElementById('sa');
-  if(!sa){
-    sa=document.createElement('audio');sa.id='sa';sa.loop=true;sa.volume=0.001;
-    sa.src='data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=';
-    document.body.appendChild(sa);
-  }
+  if(!sa){sa=document.createElement('audio');sa.id='sa';sa.loop=true;sa.volume=0.001;sa.src='data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=';document.body.appendChild(sa);}
   sa.play().catch(()=>{});
   navigator.mediaSession.metadata=new MediaMetadata({title:'Tally Intercom',artist:myId||''});
-  const toggle=()=>{
-    if(!headsetOn){headsetOn=true;pttPress();
-      const n=document.getElementById('headset-note');if(n){n.textContent='🎙 Hablando — pulsa para silenciar';n.classList.add('on');}
-    }else{headsetOn=false;pttRelease();
-      const n=document.getElementById('headset-note');if(n){n.textContent='Auriculares: botón central para hablar';n.classList.remove('on');}
-    }
+  const toggle=async()=>{
+    headsetOn=!headsetOn;lockMode=headsetOn;micOpen=false;await setMic(headsetOn);updateMicUI();
   };
   navigator.mediaSession.setActionHandler('play',toggle);
   navigator.mediaSession.setActionHandler('pause',toggle);
 }
 
-// ── CONTROL REALIZACIÓN ──
-let realMode=false;
-let audioCtx=null, analyser=null, micStream=null, gateThreshold=-40;
-let noiseGateInterval=null, meterInterval=null;
-
-function enterRealizacion(){
-  realMode=true;
-  myId='Realización';
-  localStorage.setItem('tallyMode','realizacion');
-  show('screen-realizacion');
-  joinRealizacion();
+// ═══ CARGANDO AUDIO ═══
+let audioLoadTimer=null,audioLoadCount=20;
+function showAudioLoading(){
+  const el=document.getElementById('audio-loading');
+  el.classList.add('show');
+  audioLoadCount=20;
+  document.getElementById('al-count').textContent=audioLoadCount;
+  // Reiniciar animación de barra
+  const fill=el.querySelector('.al-fill');fill.style.animation='none';void fill.offsetWidth;fill.style.animation='alCount 20s linear forwards';
+  clearInterval(audioLoadTimer);
+  audioLoadTimer=setInterval(()=>{
+    audioLoadCount--;
+    document.getElementById('al-count').textContent=audioLoadCount;
+    if(audioLoadCount<=0)hideAudioLoading();
+  },1000);
 }
+function hideAudioLoading(){clearInterval(audioLoadTimer);document.getElementById('audio-loading').classList.remove('show');}
 
+// ═══ REALIZACIÓN ═══
+async function enterRealizacion(){
+  isReal=true;myId='Realización';baseId='Realización';
+  show('screen-realizacion');
+  showAudioLoading();
+  await joinRealizacion();
+}
 async function joinRealizacion(){
-  // Conectar al intercom de LiveKit con micrófono abierto
+  if(lkRoom)await leaveRoom();
   try{
     const res=await fetch(`/livekit-token?room=intercom&identity=Realizaci%C3%B3n`);
     const data=await res.json();
-    lkRoom=new LivekitClient.Room({
-      audioCaptureDefaults:{echoCancellation:true,noiseSuppression:true,autoGainControl:false},
-      adaptiveStream:true,
-    });
-    lkRoom.on(LivekitClient.RoomEvent.ParticipantConnected,    updateRealParticipants);
-    lkRoom.on(LivekitClient.RoomEvent.ParticipantDisconnected, updateRealParticipants);
-    lkRoom.on(LivekitClient.RoomEvent.TrackSubscribed,         t=>{if(t.kind===LivekitClient.Track.Kind.Audio){const e=t.attach();e.id='aud-'+t.sid;document.body.appendChild(e);}});
-    lkRoom.on(LivekitClient.RoomEvent.TrackUnsubscribed,       t=>{const e=document.getElementById('aud-'+t.sid);if(e)e.remove();});
-    lkRoom.on(LivekitClient.RoomEvent.ActiveSpeakersChanged,   spk=>{activeSpeakers=new Set(spk.map(s=>s.identity));updateRealParticipants();});
-    lkRoom.on(LivekitClient.RoomEvent.Disconnected,            ()=>{
-      document.getElementById('real-dot').classList.remove('on');
-    });
-
+    lkRoom=new LivekitClient.Room({audioCaptureDefaults:{echoCancellation:true,noiseSuppression:true,autoGainControl:false},adaptiveStream:true});
+    lkRoom.on(LivekitClient.RoomEvent.ParticipantConnected,refreshParticipants);
+    lkRoom.on(LivekitClient.RoomEvent.ParticipantDisconnected,refreshParticipants);
+    lkRoom.on(LivekitClient.RoomEvent.TrackSubscribed,t=>{if(t.kind===LivekitClient.Track.Kind.Audio){const e=t.attach();e.id='aud-'+t.sid;document.body.appendChild(e);}});
+    lkRoom.on(LivekitClient.RoomEvent.TrackUnsubscribed,t=>{const e=document.getElementById('aud-'+t.sid);if(e)e.remove();});
+    lkRoom.on(LivekitClient.RoomEvent.ActiveSpeakersChanged,spk=>{activeSpeakers=new Set(spk.map(s=>s.identity));refreshParticipants();});
     await lkRoom.connect(data.url,data.token);
 
-    // Capturar micrófono con Web Audio API para análisis de nivel
-    micStream=await navigator.mediaDevices.getUserMedia({
-      audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:false}
-    });
+    // Micrófono con ganancia ajustable vía Web Audio
+    micStream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:false}});
     audioCtx=new AudioContext();
-    const source=audioCtx.createMediaStreamSource(micStream);
-    analyser=audioCtx.createAnalyser();
-    analyser.fftSize=256;
-    source.connect(analyser);
+    const src=audioCtx.createMediaStreamSource(micStream);
+    gainNode=audioCtx.createGain();gainNode.gain.value=realGain/100;
+    analyser=audioCtx.createAnalyser();analyser.fftSize=256;
+    const dest=audioCtx.createMediaStreamDestination();
+    src.connect(gainNode);gainNode.connect(analyser);gainNode.connect(dest);
 
-    // Publicar el micrófono en LiveKit — empieza muteado, noise gate decide
-    localTrack=await LivekitClient.createLocalAudioTrack({
-      echoCancellation:true,noiseSuppression:true,autoGainControl:false
-    });
-    await lkRoom.localParticipant.publishTrack(localTrack,{muted:true});
-    await localTrack.mute();
+    // Publicar el audio procesado (con ganancia) — siempre abierto
+    const processedTrack=dest.stream.getAudioTracks()[0];
+    localTrack=await lkRoom.localParticipant.publishTrack(processedTrack,{name:'realizacion-mic'});
 
-    document.getElementById('real-dot').classList.add('on');
-    updateRealParticipants();
-
-    // Iniciar noise gate y medidor
-    startNoiseGate();
-    startMeter();
-
-  }catch(e){
-    console.error('Realización LiveKit error:',e);
-  }
+    document.getElementById('real-conn').classList.add('on');
+    startRealMeter();
+    refreshParticipants();
+  }catch(e){console.error('Realización error:',e);}
 }
-
-function updateGate(val){
-  gateThreshold=parseInt(val);
-  document.getElementById('real-gate-value').textContent=`${val} dB`;
+function stopRealAudio(){
+  if(audioCtx){audioCtx.close().catch(()=>{});audioCtx=null;}
+  if(micStream){micStream.getTracks().forEach(t=>t.stop());micStream=null;}
+  gainNode=null;analyser=null;
 }
-
-function getLevel(){
-  if(!analyser)return -Infinity;
-  const data=new Uint8Array(analyser.frequencyBinCount);
-  analyser.getByteFrequencyData(data);
-  const avg=data.reduce((a,b)=>a+b,0)/data.length;
-  // Convertir 0-255 a dB aproximado
-  return avg===0 ? -Infinity : 20*Math.log10(avg/255);
+function updateGain(v){
+  realGain=parseInt(v);
+  document.getElementById('gain-val').textContent=realGain+'%';
+  if(gainNode)gainNode.gain.value=realGain/100;
 }
-
-function startNoiseGate(){
-  if(noiseGateInterval)clearInterval(noiseGateInterval);
-  noiseGateInterval=setInterval(async()=>{
-    if(!localTrack||!lkRoom)return;
-    const level=getLevel();
-    const shouldSpeak=level>gateThreshold;
-    const indicator=document.getElementById('real-mic-indicator');
-    const label=document.getElementById('real-mic-label');
-    if(shouldSpeak&&pttActive===false){
-      // Abrir micrófono
-      pttActive=true;
-      await localTrack.unmute();
-      indicator&&indicator.classList.add('active');
-      if(label)label.textContent='TRANSMITIENDO';
-    }else if(!shouldSpeak&&pttActive===true){
-      // Cerrar micrófono
-      pttActive=false;
-      await localTrack.mute();
-      indicator&&indicator.classList.remove('active');
-      if(label)label.textContent='ESCUCHANDO';
-    }
-  },80); // Comprueba cada 80ms
-}
-
-function startMeter(){
-  if(meterInterval)clearInterval(meterInterval);
-  meterInterval=setInterval(()=>{
-    const level=getLevel();
-    const fill=document.getElementById('real-meter-fill');
-    if(!fill)return;
-    // Mapear -60dB..0dB a 0%..100%
-    const pct=Math.max(0,Math.min(100,((level+60)/60)*100));
-    fill.style.width=pct+'%';
-    fill.className='real-meter-fill'+(level>-6?' clip':level>-18?' loud':'');
+let realMeterId=null;
+function startRealMeter(){
+  clearInterval(realMeterId);
+  realMeterId=setInterval(()=>{
+    if(!analyser)return;
+    const d=new Uint8Array(analyser.frequencyBinCount);
+    analyser.getByteFrequencyData(d);
+    const avg=d.reduce((a,b)=>a+b,0)/d.length;
+    const pct=Math.min(100,(avg/255)*100*1.5);
+    const f=document.getElementById('real-meter');
+    if(f){f.style.width=pct+'%';f.className='meter-fill'+(pct>85?' clip':pct>60?' loud':'');}
   },50);
 }
-
-function updateRealParticipants(){
-  const list=document.getElementById('real-participants-list');
-  if(!list||!lkRoom)return;
-  list.innerHTML='';
-  [lkRoom.localParticipant,...lkRoom.remoteParticipants.values()].forEach(p=>{
+function renderRealParticipants(all){
+  const cont=document.getElementById('real-participants');
+  if(!cont)return;
+  cont.innerHTML='';
+  all.forEach(p=>{
     const spk=activeSpeakers.has(p.identity);
+    const isMe=p.isLocal;
+    // Detectar input asociado para renombrar
+    const cam=[...CAMS_PLATO,...CAMS_ENG].find(c=>nameFor(c)===p.identity||c.base===p.identity);
     const row=document.createElement('div');
-    row.className='p-row';
-    row.innerHTML=`<div class="p-avatar ${spk?'speaking':''}">${p.identity[0].toUpperCase()}</div><div class="p-info"><div class="p-name">${p.identity}${p.isLocal?' (tú)':''}</div><div class="p-state ${spk?'speaking':''}">${spk?'Hablando':'En escucha'}</div></div>`;
-    list.appendChild(row);
+    row.className='rpr';
+    row.innerHTML=`
+      <div class="rpr-av ${spk?'spk':''}">${p.identity[0].toUpperCase()}</div>
+      <div class="rpr-info"><div class="rpr-name">${p.identity}${isMe?' (tú)':''}</div><div class="rpr-state ${spk?'spk':''}">${spk?'Hablando':'En escucha'}</div></div>
+      <div class="rpr-actions">
+        ${cam?`<div class="rpr-btn" onclick="renameUser('${cam.input}','${p.identity}')">✏️</div>`:''}
+        ${!isMe?`<div class="rpr-btn kick" onclick="confirmKick('${p.identity}')">🚫</div>`:''}
+      </div>`;
+    cont.appendChild(row);
   });
 }
 
-// ── SOCKET ──
+// ═══ RENOMBRAR (superusuario) ═══
+function renameUser(input,currentName){
+  openModal({icon:'✏️',title:'Renombrar',text:`Nuevo nombre para esta cámara (máx 10 caracteres). Se mostrará junto al número de cámara.`,input:true,inputPlaceholder:'SERGIO',inputMax:10,okText:'Guardar',onOk:(val)=>{
+    socket.emit('set-name',{input:input,name:val});
+    closeModal();
+  }});
+}
+
+// ═══ EXPULSAR (superusuario) ═══
+function confirmKick(identity){
+  openModal({icon:'🚫',title:'Expulsar usuario',text:`¿Seguro que quieres expulsar a <b>${identity}</b> del intercom? Su micrófono se cerrará y será desconectado.`,danger:true,okText:'Expulsar',onOk:()=>{
+    socket.emit('kick-user',{identity:identity});
+    closeModal();
+  }});
+}
+
+// ═══ EMERGENCIA ═══
+let emergencyOn=false;
+function toggleEmergency(){
+  emergencyOn=!emergencyOn;
+  socket.emit('set-emergency',{active:emergencyOn});
+  const btn=document.getElementById('btn-emergency');
+  document.getElementById('emergency-label').textContent=emergencyOn?'DESACTIVAR AVISO':'ACTIVAR AVISO';
+  btn.classList.toggle('active',emergencyOn);
+}
+function showEmergencyOverlay(){
+  // No mostrar a quien lo activa (realización)
+  if(isReal)return;
+  document.getElementById('emergency-overlay').classList.add('show');
+  navigator.vibrate&&navigator.vibrate([200,100,200,100,200]);
+}
+function dismissEmergency(){
+  document.getElementById('emergency-overlay').classList.remove('show');
+}
+
+// ═══ MODAL ═══
+let modalOnOk=null;
+function openModal(opts){
+  document.getElementById('modal-icon').textContent=opts.icon||'⚠️';
+  document.getElementById('modal-title').textContent=opts.title||'';
+  document.getElementById('modal-text').innerHTML=opts.text||'';
+  const inp=document.getElementById('modal-input');
+  if(opts.input){inp.style.display='block';inp.value='';inp.type=opts.inputType||'text';inp.placeholder=opts.inputPlaceholder||'';inp.style.borderColor='var(--border2)';if(opts.inputMax)inp.maxLength=opts.inputMax;else inp.removeAttribute('maxLength');setTimeout(()=>inp.focus(),100);}
+  else inp.style.display='none';
+  const ok=document.getElementById('modal-ok');
+  ok.textContent=opts.okText||'Aceptar';
+  ok.className='btn-modal '+(opts.danger?'danger':'primary');
+  modalOnOk=opts.onOk;
+  ok.onclick=()=>{modalOnOk&&modalOnOk(inp.value.trim());};
+  inp.onkeydown=(e)=>{if(e.key==='Enter')ok.onclick();};
+  document.getElementById('modal-cancel').style.display=opts.noCancel?'none':'block';
+  document.getElementById('modal-bg').classList.add('show');
+}
+function closeModal(){document.getElementById('modal-bg').classList.remove('show');modalOnOk=null;}
+
+// ═══ SOCKET ═══
 const socket=io(window.location.origin,{query:{role:'client'},reconnection:true,reconnectionDelay:2000});
-socket.on('connect',()=>{document.getElementById('menu-dot').classList.add('on');document.getElementById('menu-conn').textContent='Conectado';});
+socket.on('connect',()=>{document.getElementById('menu-dot').classList.add('on');document.getElementById('menu-conn').textContent='Conectado al servidor';});
 socket.on('disconnect',()=>{document.getElementById('menu-dot').classList.remove('on');document.getElementById('menu-conn').textContent='Reconectando...';bridgeOn=false;updateTally();});
 socket.on('bridge-status',d=>{bridgeOn=d.connected;updateGrid();updateTally();});
-socket.on('tally-update', d=>{tallyInputs=d.inputs||{};updateGrid();updateTally();});
+socket.on('tally-update',d=>{tallyInputs=d.inputs||{};updateGrid();updateTally();});
+socket.on('names-update',d=>{
+  customNames=d||{};
+  // Actualizar mi propio nombre si soy una cámara y me renombraron
+  if(selectedCam){const nn=nameFor(selectedCam);if(nn!==myId){myId=nn;document.getElementById('tally-camname').textContent=nn;}}
+  if(document.getElementById('screen-select').classList.contains('active'))buildGrid();
+  updateTally();
+});
+socket.on('emergency',d=>{
+  if(d.active)showEmergencyOverlay();
+  else dismissEmergency();
+});
+socket.on('kicked',d=>{
+  if(d.identity===myId){
+    // Me han expulsado
+    leaveRoom();stopRealAudio();
+    openModal({icon:'🚫',title:'Has sido expulsado',text:'Realización te ha desconectado del intercom.',noCancel:true,okText:'Entendido',onOk:()=>{closeModal();goMenu();}});
+  }
+});
 
-// ── INICIO ──
-if(localStorage.getItem('permsGranted')==='1'){
-  navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}}).then(s=>{torchTrack=s.getVideoTracks()[0];}).catch(()=>{});
-  const sm=localStorage.getItem('tallyMode');
-  const sc=localStorage.getItem('selectedCam');
-  if(sm==='realizacion'){
-    enterRealizacion();
-  }else if(sm){
-    enterMode(sm);
-    if(sc){
-      const cam=(sm==='plato'?CAMS_PLATO:CAMS_ENG).find(c=>c.input===sc);
-      if(cam)selectCam(cam);else show('screen-select');
-    }else show('screen-select');
-  }else show('screen-menu');
-}
+// ═══ INICIO ═══
+// Siempre arranca en bienvenida (no recuerda pantalla)
+show('screen-welcome');
 </script>
 </body>
 </html>
